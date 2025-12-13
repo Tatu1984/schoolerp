@@ -80,8 +80,16 @@ async function main() {
   // Create Classes
   const classes = []
   for (let grade = 1; grade <= 12; grade++) {
-    const cls = await prisma.class.create({
-      data: {
+    const cls = await prisma.class.upsert({
+      where: {
+        schoolId_academicYearId_name: {
+          schoolId: school.id,
+          academicYearId: academicYear.id,
+          name: `Class ${grade}`,
+        },
+      },
+      update: {},
+      create: {
         schoolId: school.id,
         branchId: branch.id,
         academicYearId: academicYear.id,
@@ -99,8 +107,15 @@ async function main() {
   const sections = ['A', 'B', 'C']
   for (const cls of classes.slice(0, 5)) { // Only for first 5 classes
     for (const sectionName of sections) {
-      await prisma.section.create({
-        data: {
+      await prisma.section.upsert({
+        where: {
+          classId_name: {
+            classId: cls.id,
+            name: sectionName,
+          },
+        },
+        update: {},
+        create: {
           classId: cls.id,
           name: sectionName,
           capacity: 40,
@@ -123,8 +138,15 @@ async function main() {
   ]
 
   for (const subject of subjects) {
-    await prisma.subject.create({
-      data: {
+    await prisma.subject.upsert({
+      where: {
+        schoolId_code: {
+          schoolId: school.id,
+          code: subject.code,
+        },
+      },
+      update: {},
+      create: {
         schoolId: school.id,
         name: subject.name,
         code: subject.code,
@@ -144,12 +166,21 @@ async function main() {
   ]
 
   for (const fee of fees) {
-    await prisma.fee.create({
-      data: {
+    const existingFee = await prisma.fee.findFirst({
+      where: {
         schoolId: school.id,
-        ...fee,
+        name: fee.name,
+        type: fee.type,
       },
     })
+    if (!existingFee) {
+      await prisma.fee.create({
+        data: {
+          schoolId: school.id,
+          ...fee,
+        },
+      })
+    }
   }
   console.log(`✅ Created ${fees.length} fee types`)
 
@@ -162,8 +193,15 @@ async function main() {
   ]
 
   for (const route of routes) {
-    const createdRoute = await prisma.route.create({
-      data: {
+    const createdRoute = await prisma.route.upsert({
+      where: {
+        schoolId_code: {
+          schoolId: school.id,
+          code: route.code,
+        },
+      },
+      update: {},
+      create: {
         schoolId: school.id,
         ...route,
       },
@@ -177,12 +215,20 @@ async function main() {
     ]
 
     for (const stop of stops) {
-      await prisma.stop.create({
-        data: {
+      const existingStop = await prisma.stop.findFirst({
+        where: {
           routeId: createdRoute.id,
-          ...stop,
+          sequence: stop.sequence,
         },
       })
+      if (!existingStop) {
+        await prisma.stop.create({
+          data: {
+            routeId: createdRoute.id,
+            ...stop,
+          },
+        })
+      }
     }
   }
   console.log(`✅ Created ${routes.length} transport routes with stops`)
@@ -195,8 +241,15 @@ async function main() {
   ]
 
   for (const vehicle of vehicles) {
-    await prisma.vehicle.create({
-      data: {
+    await prisma.vehicle.upsert({
+      where: {
+        schoolId_number: {
+          schoolId: school.id,
+          number: vehicle.number,
+        },
+      },
+      update: {},
+      create: {
         schoolId: school.id,
         ...vehicle,
       },
@@ -205,8 +258,15 @@ async function main() {
   console.log(`✅ Created ${vehicles.length} vehicles`)
 
   // Create Hostel
-  const hostel = await prisma.hostel.create({
-    data: {
+  const hostel = await prisma.hostel.upsert({
+    where: {
+      schoolId_code: {
+        schoolId: school.id,
+        code: 'BH1',
+      },
+    },
+    update: {},
+    create: {
       schoolId: school.id,
       name: 'Boys Hostel',
       code: 'BH1',
@@ -218,41 +278,73 @@ async function main() {
 
   // Add floors and rooms
   for (let floorNum = 1; floorNum <= 3; floorNum++) {
-    const floor = await prisma.hostelFloor.create({
-      data: {
+    let floor = await prisma.hostelFloor.findFirst({
+      where: {
         hostelId: hostel.id,
-        name: `Floor ${floorNum}`,
         number: floorNum,
       },
     })
+    if (!floor) {
+      floor = await prisma.hostelFloor.create({
+        data: {
+          hostelId: hostel.id,
+          name: `Floor ${floorNum}`,
+          number: floorNum,
+        },
+      })
+    }
 
     // Add 10 rooms per floor
     for (let roomNum = 1; roomNum <= 10; roomNum++) {
-      const room = await prisma.hostelRoom.create({
-        data: {
+      const roomNumber = `${floorNum}0${roomNum}`
+      let room = await prisma.hostelRoom.findFirst({
+        where: {
           floorId: floor.id,
-          number: `${floorNum}0${roomNum}`,
-          capacity: 4,
-          type: 'Shared',
+          number: roomNumber,
         },
       })
+      if (!room) {
+        room = await prisma.hostelRoom.create({
+          data: {
+            floorId: floor.id,
+            number: roomNumber,
+            capacity: 4,
+            type: 'Shared',
+          },
+        })
+      }
 
       // Add 4 beds per room
       for (let bedNum = 1; bedNum <= 4; bedNum++) {
-        await prisma.hostelBed.create({
-          data: {
+        const existingBed = await prisma.hostelBed.findFirst({
+          where: {
             roomId: room.id,
             number: `${bedNum}`,
           },
         })
+        if (!existingBed) {
+          await prisma.hostelBed.create({
+            data: {
+              roomId: room.id,
+              number: `${bedNum}`,
+            },
+          })
+        }
       }
     }
   }
   console.log('✅ Created hostel with floors, rooms, and beds')
 
   // Create Library
-  const library = await prisma.library.create({
-    data: {
+  const library = await prisma.library.upsert({
+    where: {
+      schoolId_code: {
+        schoolId: school.id,
+        code: 'LIB001',
+      },
+    },
+    update: {},
+    create: {
       schoolId: school.id,
       name: 'Central Library',
       code: 'LIB001',
@@ -271,15 +363,24 @@ async function main() {
   ]
 
   for (const book of books) {
-    await prisma.book.create({
-      data: {
+    const existingBook = await prisma.book.findFirst({
+      where: {
         libraryId: library.id,
-        ...book,
-        available: book.quantity,
-        price: 500,
-        purchaseDate: new Date(),
+        title: book.title,
+        author: book.author,
       },
     })
+    if (!existingBook) {
+      await prisma.book.create({
+        data: {
+          libraryId: library.id,
+          ...book,
+          available: book.quantity,
+          price: 500,
+          purchaseDate: new Date(),
+        },
+      })
+    }
   }
   console.log(`✅ Created library with ${books.length} books`)
 
@@ -315,8 +416,15 @@ async function main() {
   ]
 
   for (const studentData of sampleStudents) {
-    const student = await prisma.student.create({
-      data: {
+    const student = await prisma.student.upsert({
+      where: {
+        schoolId_admissionNumber: {
+          schoolId: school.id,
+          admissionNumber: studentData.admissionNumber,
+        },
+      },
+      update: {},
+      create: {
         ...studentData,
         schoolId: school.id,
         branchId: branch.id,
@@ -331,19 +439,28 @@ async function main() {
       },
     })
 
-    // Add guardian
-    await prisma.guardian.create({
-      data: {
+    // Add guardian (check if already exists)
+    const existingGuardian = await prisma.guardian.findFirst({
+      where: {
         studentId: student.id,
-        relation: 'Father',
-        firstName: studentData.firstName + "'s",
-        lastName: 'Parent',
-        phone: studentData.phone,
-        email: 'parent.' + studentData.email,
-        occupation: 'Business',
         isPrimary: true,
       },
     })
+
+    if (!existingGuardian) {
+      await prisma.guardian.create({
+        data: {
+          studentId: student.id,
+          relation: 'Father',
+          firstName: studentData.firstName + "'s",
+          lastName: 'Parent',
+          phone: studentData.phone,
+          email: 'parent.' + studentData.email,
+          occupation: 'Business',
+          isPrimary: true,
+        },
+      })
+    }
   }
   console.log(`✅ Created ${sampleStudents.length} sample students`)
 
