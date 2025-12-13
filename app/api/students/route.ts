@@ -58,7 +58,7 @@ export const GET = withApiHandler(
               id: true,
               firstName: true,
               lastName: true,
-              relationship: true,
+              relation: true,
               phone: true,
               isPrimary: true,
             },
