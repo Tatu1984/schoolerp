@@ -83,7 +83,7 @@ export default function AttendanceAnalyticsPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-2xl font-bold text-orange-600">{analytics.defaulters?.length || 0}</div>
-              <div className="text-sm text-gray-600">Defaulters (<75%)</div>
+              <div className="text-sm text-gray-600">Defaulters (&lt;75%)</div>
             </div>
             <TrendingUp className="w-8 h-8 text-orange-600" />
           </div>
