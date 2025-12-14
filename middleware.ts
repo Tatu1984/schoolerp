@@ -9,11 +9,11 @@ const publicRoutes = ['/', '/login', '/api/auth']
 const roleRoutes: Record<string, string[]> = {
   '/dashboard/security': ['SUPER_ADMIN', 'SCHOOL_ADMIN'],
   '/dashboard/roles': ['SUPER_ADMIN', 'SCHOOL_ADMIN'],
-  '/dashboard/schools': ['SUPER_ADMIN'],
   '/dashboard/settings': ['SUPER_ADMIN', 'SCHOOL_ADMIN'],
   '/api/security': ['SUPER_ADMIN', 'SCHOOL_ADMIN'],
   '/api/roles': ['SUPER_ADMIN', 'SCHOOL_ADMIN'],
-  '/api/schools': ['SUPER_ADMIN'],
+  // Note: /api/schools access is controlled in the route handler itself
+  // SCHOOL_ADMIN can view their own school, only SUPER_ADMIN can create new schools
 }
 
 export async function middleware(request: NextRequest) {
