@@ -190,7 +190,7 @@ export default function ProspectsPage() {
                 <p className="text-sm text-gray-600">Class: {prospect.classInterested}</p>
               </div>
               <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(prospect.status)}`}>
-                {prospect.status.replace('_', ' ')}
+                {(prospect.status || '').replace('_', ' ')}
               </span>
             </div>
 

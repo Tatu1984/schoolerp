@@ -92,8 +92,8 @@ export default function AcademicYearsPage() {
     setEditingYear(year)
     setFormData({
       name: year.name,
-      startDate: year.startDate.split('T')[0],
-      endDate: year.endDate.split('T')[0],
+      startDate: year.startDate?.split('T')[0] || '',
+      endDate: year.endDate?.split('T')[0] || '',
       isCurrent: year.isCurrent,
       schoolId: year.schoolId,
     })

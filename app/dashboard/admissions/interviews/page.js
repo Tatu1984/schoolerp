@@ -102,7 +102,7 @@ export default function InterviewsPage() {
       studentName: interview.studentName,
       parentName: interview.parentName,
       contactPhone: interview.contactPhone,
-      interviewDate: interview.interviewDate.split('T')[0],
+      interviewDate: interview.interviewDate?.split('T')[0] || '',
       interviewTime: interview.interviewTime,
       interviewer: interview.interviewer,
       venue: interview.venue,

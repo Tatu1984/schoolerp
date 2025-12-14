@@ -185,7 +185,7 @@ export default function StockPage() {
                     <td className="px-6 py-4 text-sm">Rs. {item.unitPrice}</td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-1 rounded-full text-xs ${getLevelColor(level)}`}>
-                        {level.replace('_', ' ')}
+                        {(level || '').replace('_', ' ')}
                       </span>
                     </td>
                   </tr>

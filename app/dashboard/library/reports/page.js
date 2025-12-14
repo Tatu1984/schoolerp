@@ -130,7 +130,7 @@ export default function LibraryReportsPage() {
                       <div
                         className="bg-primary-500 h-2 rounded-full"
                         style={{
-                          width: `${(book.issueCount / reports.mostIssuedBooks[0].issueCount) * 100}%`
+                          width: `${reports?.mostIssuedBooks?.[0]?.issueCount ? (book.issueCount / reports.mostIssuedBooks[0].issueCount) * 100 : 0}%`
                         }}
                       ></div>
                     </div>
@@ -157,7 +157,7 @@ export default function LibraryReportsPage() {
                       <div
                         className="bg-blue-500 h-2 rounded-full"
                         style={{
-                          width: `${(category.count / reports.totalIssues) * 100}%`
+                          width: `${reports?.totalIssues ? (category.count / reports.totalIssues) * 100 : 0}%`
                         }}
                       ></div>
                     </div>
@@ -226,19 +226,22 @@ export default function LibraryReportsPage() {
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Monthly Issue Trend</h2>
             <div className="h-64 flex items-end justify-between space-x-2">
-              {reports?.monthlyTrend?.map((month, index) => (
-                <div key={index} className="flex-1 flex flex-col items-center">
-                  <div
-                    className="w-full bg-primary-500 rounded-t"
-                    style={{
-                      height: `${(month.count / Math.max(...reports.monthlyTrend.map(m => m.count))) * 100}%`,
-                      minHeight: '4px'
-                    }}
-                  ></div>
-                  <div className="text-xs text-gray-600 mt-2">{month.month}</div>
-                  <div className="text-xs font-medium text-gray-900">{month.count}</div>
-                </div>
-              )) || (
+              {reports?.monthlyTrend?.length > 0 ? reports.monthlyTrend.map((month, index) => {
+                const maxCount = Math.max(...reports.monthlyTrend.map(m => m.count || 0), 1)
+                return (
+                  <div key={index} className="flex-1 flex flex-col items-center">
+                    <div
+                      className="w-full bg-primary-500 rounded-t"
+                      style={{
+                        height: `${((month.count || 0) / maxCount) * 100}%`,
+                        minHeight: '4px'
+                      }}
+                    ></div>
+                    <div className="text-xs text-gray-600 mt-2">{month.month}</div>
+                    <div className="text-xs font-medium text-gray-900">{month.count}</div>
+                  </div>
+                )
+              }) : (
                 <div className="w-full text-center py-8 text-gray-500">No data available</div>
               )}
             </div>

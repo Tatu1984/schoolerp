@@ -80,7 +80,7 @@ export default function EventsPage() {
     setFormData({
       title: event.title,
       description: event.description || '',
-      eventDate: event.eventDate.split('T')[0],
+      eventDate: event.eventDate?.split('T')[0] || '',
       eventTime: event.eventTime,
       venue: event.venue,
       targetAudience: event.targetAudience

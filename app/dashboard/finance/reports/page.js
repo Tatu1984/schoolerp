@@ -109,31 +109,34 @@ export default function FinanceReportsPage() {
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Revenue vs Expenses Trend</h2>
             <div className="h-64 flex items-end justify-between space-x-2">
-              {reports?.monthlyData?.map((month, index) => (
-                <div key={index} className="flex-1 flex flex-col items-center space-y-2">
-                  <div className="w-full flex flex-col items-center space-y-1">
-                    <div
-                      className="w-full bg-green-500 rounded-t"
-                      style={{
-                        height: `${(month.revenue / Math.max(...reports.monthlyData.map(m => Math.max(m.revenue, m.expenses)))) * 120}px`,
-                        minHeight: '4px'
-                      }}
-                    ></div>
-                    <div
-                      className="w-full bg-red-500 rounded-t"
-                      style={{
-                        height: `${(month.expenses / Math.max(...reports.monthlyData.map(m => Math.max(m.revenue, m.expenses)))) * 120}px`,
-                        minHeight: '4px'
-                      }}
-                    ></div>
+              {reports?.monthlyData?.length > 0 ? reports.monthlyData.map((month, index) => {
+                const maxValue = Math.max(...reports.monthlyData.map(m => Math.max(m.revenue || 0, m.expenses || 0)), 1)
+                return (
+                  <div key={index} className="flex-1 flex flex-col items-center space-y-2">
+                    <div className="w-full flex flex-col items-center space-y-1">
+                      <div
+                        className="w-full bg-green-500 rounded-t"
+                        style={{
+                          height: `${((month.revenue || 0) / maxValue) * 120}px`,
+                          minHeight: '4px'
+                        }}
+                      ></div>
+                      <div
+                        className="w-full bg-red-500 rounded-t"
+                        style={{
+                          height: `${((month.expenses || 0) / maxValue) * 120}px`,
+                          minHeight: '4px'
+                        }}
+                      ></div>
+                    </div>
+                    <div className="text-xs text-gray-600">{month.month}</div>
+                    <div className="text-xs font-medium">
+                      <div className="text-green-600">Rs.{month.revenue}</div>
+                      <div className="text-red-600">Rs.{month.expenses}</div>
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-600">{month.month}</div>
-                  <div className="text-xs font-medium">
-                    <div className="text-green-600">Rs.{month.revenue}</div>
-                    <div className="text-red-600">Rs.{month.expenses}</div>
-                  </div>
-                </div>
-              )) || <div className="w-full text-center py-8 text-gray-500">No data available</div>}
+                )
+              }) : <div className="w-full text-center py-8 text-gray-500">No data available</div>}
             </div>
             <div className="flex justify-center space-x-6 mt-4">
               <div className="flex items-center space-x-2">
@@ -162,7 +165,7 @@ export default function FinanceReportsPage() {
                       <div
                         className="bg-green-500 h-2 rounded-full"
                         style={{
-                          width: `${(item.amount / reports.totalRevenue) * 100}%`
+                          width: `${reports?.totalRevenue ? (item.amount / reports.totalRevenue) * 100 : 0}%`
                         }}
                       ></div>
                     </div>
@@ -184,7 +187,7 @@ export default function FinanceReportsPage() {
                       <div
                         className="bg-red-500 h-2 rounded-full"
                         style={{
-                          width: `${(item.amount / reports.totalExpenses) * 100}%`
+                          width: `${reports?.totalExpenses ? (item.amount / reports.totalExpenses) * 100 : 0}%`
                         }}
                       ></div>
                     </div>

@@ -88,7 +88,7 @@ export default function EntranceTestsPage() {
     setFormData({
       schoolId: test.schoolId,
       testName: test.testName,
-      testDate: test.testDate.split('T')[0],
+      testDate: test.testDate?.split('T')[0] || '',
       testTime: test.testTime,
       duration: test.duration.toString(),
       venue: test.venue,
