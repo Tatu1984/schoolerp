@@ -121,7 +121,7 @@ export const studentUpdateSchema = studentSchema.partial().omit({ schoolId: true
 export const guardianSchema = z.object({
   firstName: requiredString.max(100),
   lastName: requiredString.max(100),
-  relationship: requiredString.max(50),
+  relation: requiredString.max(50),
   phone: requiredString.regex(/^[\d\s\-+()]+$/, 'Invalid phone number'),
   email: optionalEmail,
   occupation: optionalString,

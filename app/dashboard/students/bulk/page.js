@@ -73,8 +73,8 @@ export default function BulkUploadPage() {
         body: formData
       })
 
-      const data = await res.json()
-      setResult(data)
+      const result = await res.json()
+      setResult(result.data || result)
 
       if (res.ok) {
         setFile(null)

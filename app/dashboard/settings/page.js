@@ -30,8 +30,10 @@ export default function SettingsPage() {
     try {
       const res = await fetch('/api/settings')
       if (res.ok) {
-        const data = await res.json()
-        setSettings(data)
+        const result = await res.json()
+        if (result.data) {
+          setSettings(prev => ({ ...prev, ...result.data }))
+        }
       }
     } catch (error) {
       console.error('Error fetching settings:', error)
