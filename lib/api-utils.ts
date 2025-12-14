@@ -240,7 +240,8 @@ export function withApiHandler(
       // Check module access
       if (session && options.module) {
         if (!hasModuleAccess(session.user.role, options.module)) {
-          return forbiddenResponse(`No access to ${options.module} module`)
+          console.error(`Access denied: role=${session.user.role}, module=${options.module}`)
+          return forbiddenResponse(`No access to ${options.module} module (role: ${session.user.role})`)
         }
       }
 
