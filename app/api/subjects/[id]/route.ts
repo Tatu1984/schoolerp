@@ -59,9 +59,16 @@ export const PUT = withApiHandler(
       return notFoundResponse('Subject not found')
     }
 
+    const updateData: Record<string, unknown> = {}
+    if (data?.name !== undefined) updateData.name = data.name
+    if (data?.code !== undefined) updateData.code = data.code
+    if (data?.description !== undefined) updateData.description = data.description
+    if (data?.classId !== undefined) updateData.classId = data.classId
+    if (data?.isActive !== undefined) updateData.isActive = data.isActive
+
     const subject = await prisma.subject.update({
       where: { id: params.id },
-      data,
+      data: updateData,
       include: {
         class: {
           select: {

@@ -9,7 +9,6 @@ import {
   getPaginationParams,
   paginatedResponse,
   getSearchParams,
-  getSchoolFilter,
   AuthenticatedSession,
 } from '@/lib/api-utils'
 import { bookSchema } from '@/lib/validations'
@@ -19,10 +18,10 @@ export const GET = withApiHandler(
   async (request: NextRequest, _context, session: AuthenticatedSession | null) => {
     const pagination = getPaginationParams(request)
     const searchParams = getSearchParams(request)
-    const schoolFilter = getSchoolFilter(session)
+    const schoolId = session?.user.schoolId
 
     const where: Prisma.BookWhereInput = {
-      ...schoolFilter,
+      ...(schoolId && { library: { schoolId } }),
       ...(searchParams.search && {
         OR: [
           { title: { contains: searchParams.search, mode: 'insensitive' } },
@@ -66,32 +65,54 @@ export const POST = withApiHandler(
       return errorResponse('Invalid request body')
     }
 
-    const schoolId = data.schoolId || session?.user.schoolId
-    if (!schoolId) {
-      return errorResponse('School ID is required')
+    // Verify library exists and belongs to user's school
+    const library = await prisma.library.findFirst({
+      where: {
+        id: data.libraryId,
+        ...(session?.user.schoolId && { schoolId: session.user.schoolId }),
+      },
+    })
+
+    if (!library) {
+      return errorResponse('Library not found')
     }
 
-    // Check for duplicate ISBN in school if provided
+    // Check for duplicate ISBN in library if provided
     if (data.isbn) {
       const existingBook = await prisma.book.findFirst({
         where: {
-          schoolId,
+          libraryId: data.libraryId,
           isbn: data.isbn,
         },
       })
 
       if (existingBook) {
         return validationErrorResponse({
-          isbn: ['Book with this ISBN already exists'],
+          isbn: ['Book with this ISBN already exists in this library'],
         })
       }
     }
 
     const book = await prisma.book.create({
       data: {
-        ...data,
-        schoolId,
+        library: { connect: { id: data.libraryId } },
+        title: data.title,
+        author: data.author,
+        isbn: data.isbn,
+        barcode: data.barcode,
+        category: data.category,
+        publisher: data.publisher,
+        edition: data.edition,
+        pages: data.pages,
+        language: data.language,
+        quantity: data.quantity,
         available: data.available ?? data.quantity,
+        price: data.price,
+        purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : undefined,
+        location: data.location,
+        description: data.description,
+        coverImage: data.coverImage,
+        isActive: data.isActive,
       },
       include: {
         library: { select: { id: true, name: true } },

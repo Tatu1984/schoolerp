@@ -43,9 +43,18 @@ export const POST = withApiHandler(
 
     const asset = await prisma.asset.create({
       data: {
-        ...data!,
         schoolId,
-        purchaseDate: data!.purchaseDate ? new Date(data!.purchaseDate) : new Date(),
+        name: data!.name,
+        code: data!.code,
+        assetType: data!.assetType,
+        description: data!.description,
+        purchaseDate: data!.purchaseDate ? new Date(data!.purchaseDate) : undefined,
+        purchasePrice: data!.purchasePrice,
+        currentValue: data!.currentValue,
+        location: data!.location,
+        condition: data!.condition,
+        isDurable: data!.isDurable,
+        isActive: data!.isActive,
       },
     })
 

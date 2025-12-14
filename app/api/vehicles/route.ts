@@ -25,6 +25,7 @@ export const GET = withApiHandler(
       ...schoolFilter,
       ...(searchParams.search && {
         OR: [
+          { number: { contains: searchParams.search, mode: 'insensitive' } },
           { registrationNo: { contains: searchParams.search, mode: 'insensitive' } },
           { driverName: { contains: searchParams.search, mode: 'insensitive' } },
         ],
@@ -40,7 +41,7 @@ export const GET = withApiHandler(
           school: { select: { id: true, name: true } },
           route: { select: { id: true, name: true } },
         },
-        orderBy: { registrationNo: 'asc' },
+        orderBy: { number: 'asc' },
         skip: pagination.skip,
         take: pagination.limit,
       }),
@@ -100,10 +101,17 @@ export const POST = withApiHandler(
 
     const vehicle = await prisma.vehicle.create({
       data: {
-        ...data,
         schoolId,
-        insuranceExpiry: data.insuranceExpiry ? new Date(data.insuranceExpiry) : null,
-        fitnessExpiry: data.fitnessExpiry ? new Date(data.fitnessExpiry) : null,
+        number: data.number,
+        type: data.type,
+        capacity: data.capacity,
+        routeId: data.routeId,
+        driverName: data.driverName,
+        driverPhone: data.driverPhone,
+        driverLicense: data.driverLicense,
+        registrationNo: data.registrationNo,
+        insurance: data.insurance,
+        isActive: data.isActive,
       },
       include: {
         school: { select: { id: true, name: true } },

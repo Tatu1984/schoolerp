@@ -11,9 +11,9 @@ export const GET = withApiHandler(
     const schoolFilter = getSchoolFilter(session)
 
     // Calculate total fees collected
-    const totalCollected = await prisma.feeCollection.aggregate({
+    const totalCollected = await prisma.feePayment.aggregate({
       _sum: {
-        amountPaid: true
+        paidAmount: true
       },
       where: {
         ...schoolFilter,
@@ -24,10 +24,10 @@ export const GET = withApiHandler(
     })
 
     // Calculate total fees pending
-    const totalPending = await prisma.feeCollection.aggregate({
+    const totalPending = await prisma.feePayment.aggregate({
       _sum: {
         amount: true,
-        amountPaid: true
+        paidAmount: true
       },
       where: {
         ...schoolFilter,
@@ -37,7 +37,7 @@ export const GET = withApiHandler(
       }
     })
 
-    const pendingAmount = (totalPending._sum.amount || 0) - (totalPending._sum.amountPaid || 0)
+    const pendingAmount = (totalPending._sum.amount || 0) - (totalPending._sum.paidAmount || 0)
 
     // Calculate total expenses
     const totalExpenses = await prisma.expense.aggregate({
@@ -51,10 +51,10 @@ export const GET = withApiHandler(
     const sixMonthsAgo = new Date()
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
 
-    const monthlyCollections = await prisma.feeCollection.groupBy({
+    const monthlyCollections = await prisma.feePayment.groupBy({
       by: ['paymentDate'],
       _sum: {
-        amountPaid: true
+        paidAmount: true
       },
       where: {
         ...schoolFilter,
@@ -82,10 +82,10 @@ export const GET = withApiHandler(
     })
 
     const report = {
-      totalCollected: totalCollected._sum.amountPaid || 0,
+      totalCollected: totalCollected._sum.paidAmount || 0,
       totalPending: pendingAmount,
       totalExpenses: totalExpenses._sum.amount || 0,
-      netRevenue: (totalCollected._sum.amountPaid || 0) - (totalExpenses._sum.amount || 0),
+      netRevenue: (totalCollected._sum.paidAmount || 0) - (totalExpenses._sum.amount || 0),
       monthlyTrends: monthlyCollections,
       categoryExpenses
     }

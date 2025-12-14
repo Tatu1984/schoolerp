@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import prisma from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 import {
   withApiHandler,
   getSchoolFilter,
@@ -7,12 +8,13 @@ import {
   notFoundResponse,
   validationErrorResponse,
   validateBody,
+  AuthenticatedSession,
 } from '@/lib/api-utils'
 import { admissionSchema } from '@/lib/validations'
 
 export const PUT = withApiHandler(
-  async (request: NextRequest, context, session) => {
-    const { id } = context.params
+  async (request: NextRequest, context, session: AuthenticatedSession | null) => {
+    const { id } = await context.params
     const schoolFilter = getSchoolFilter(session)
     const { data, errors } = await validateBody(request, admissionSchema.partial())
 
@@ -21,7 +23,7 @@ export const PUT = withApiHandler(
     }
 
     // Check if application exists and belongs to user's school
-    const existing = await prisma.admissionProspect.findFirst({
+    const existing = await prisma.admission.findFirst({
       where: { id, ...schoolFilter },
     })
 
@@ -29,28 +31,37 @@ export const PUT = withApiHandler(
       return notFoundResponse('Application not found')
     }
 
-    const application = await prisma.admissionProspect.update({
+    // Extract documents and handle null specifically for Prisma JSON fields
+    const { documents, ...restData } = data!
+
+    const updateData: Prisma.AdmissionUpdateInput = {
+      firstName: restData.firstName,
+      lastName: restData.lastName,
+      dateOfBirth: restData.dateOfBirth ? new Date(restData.dateOfBirth) : undefined,
+      gender: restData.gender,
+      parentName: restData.parentName,
+      parentPhone: restData.parentPhone,
+      parentEmail: restData.parentEmail,
+      address: restData.address,
+      appliedClass: restData.appliedClass,
+      previousSchool: restData.previousSchool,
+      status: restData.status,
+      testDate: restData.testDate ? new Date(restData.testDate) : undefined,
+      testScore: restData.testScore,
+      interviewDate: restData.interviewDate ? new Date(restData.interviewDate) : undefined,
+      interviewNotes: restData.interviewNotes,
+    }
+
+    // Handle documents field - Prisma requires special handling for nullable JSON
+    if (documents !== undefined) {
+      updateData.documents = documents === null
+        ? Prisma.JsonNull
+        : (documents as Prisma.InputJsonValue)
+    }
+
+    const application = await prisma.admission.update({
       where: { id },
-      data: {
-        firstName: data!.firstName,
-        lastName: data!.lastName,
-        dateOfBirth: data!.dateOfBirth ? new Date(data!.dateOfBirth) : undefined,
-        gender: data!.gender,
-        parentName: data!.parentName,
-        parentPhone: data!.parentPhone,
-        parentEmail: data!.parentEmail,
-        address: data!.address,
-        classAppliedFor: data!.classAppliedFor,
-        previousSchool: data!.previousSchool,
-        status: data!.status,
-        email: data!.email,
-        phone: data!.phone,
-        testDate: data!.testDate ? new Date(data!.testDate) : undefined,
-        testScore: data!.testScore,
-        interviewDate: data!.interviewDate ? new Date(data!.interviewDate) : undefined,
-        interviewNotes: data!.interviewNotes,
-        documents: data!.documents,
-      },
+      data: updateData,
     })
 
     return successResponse(application)
@@ -59,12 +70,12 @@ export const PUT = withApiHandler(
 )
 
 export const DELETE = withApiHandler(
-  async (request: NextRequest, context, session) => {
-    const { id } = context.params
+  async (_request: NextRequest, context, session: AuthenticatedSession | null) => {
+    const { id } = await context.params
     const schoolFilter = getSchoolFilter(session)
 
     // Check if application exists and belongs to user's school
-    const existing = await prisma.admissionProspect.findFirst({
+    const existing = await prisma.admission.findFirst({
       where: { id, ...schoolFilter },
     })
 
@@ -72,7 +83,7 @@ export const DELETE = withApiHandler(
       return notFoundResponse('Application not found')
     }
 
-    await prisma.admissionProspect.delete({
+    await prisma.admission.delete({
       where: { id },
     })
 

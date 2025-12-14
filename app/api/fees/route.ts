@@ -94,9 +94,14 @@ export const POST = withApiHandler(
 
     const fee = await prisma.fee.create({
       data: {
-        ...data,
         schoolId,
-        dueDate: data.dueDate ? new Date(data.dueDate) : null,
+        name: data.name,
+        type: data.type,
+        amount: data.amount,
+        frequency: data.frequency,
+        classId: data.classId,
+        description: data.description,
+        isActive: data.isActive,
       },
       include: {
         school: { select: { id: true, name: true } },

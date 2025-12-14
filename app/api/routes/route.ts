@@ -38,7 +38,7 @@ export const GET = withApiHandler(
         include: {
           school: { select: { id: true, name: true } },
           stops: {
-            select: { id: true, name: true, pickupTime: true, dropTime: true, fare: true },
+            select: { id: true, name: true, arrivalTime: true, sequence: true, fare: true },
             orderBy: { sequence: 'asc' },
           },
           vehicles: {
@@ -91,8 +91,11 @@ export const POST = withApiHandler(
 
     const route = await prisma.route.create({
       data: {
-        ...data,
         schoolId,
+        name: data.name,
+        code: data.code,
+        description: data.description,
+        isActive: data.isActive,
       },
       include: {
         school: { select: { id: true, name: true } },

@@ -56,9 +56,20 @@ export const PUT = withApiHandler(
       return validationErrorResponse(errors)
     }
 
+    const updateData: Record<string, unknown> = {}
+    if (data!.name !== undefined) updateData.name = data!.name
+    if (data!.code !== undefined) updateData.code = data!.code
+    if (data!.description !== undefined) updateData.description = data!.description
+    if (data!.classId !== undefined) updateData.classId = data!.classId
+    if (data!.subjectId !== undefined) updateData.subjectId = data!.subjectId
+    if (data!.teacherId !== undefined) updateData.teacherId = data!.teacherId
+    if (data!.startDate !== undefined) updateData.startDate = data!.startDate ? new Date(data!.startDate) : null
+    if (data!.endDate !== undefined) updateData.endDate = data!.endDate ? new Date(data!.endDate) : null
+    if (data!.isActive !== undefined) updateData.isActive = data!.isActive
+
     const course = await prisma.course.update({
       where: { id: params.id },
-      data: data!
+      data: updateData
     })
 
     return successResponse(course)

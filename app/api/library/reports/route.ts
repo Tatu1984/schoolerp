@@ -10,52 +10,49 @@ export const GET = withApiHandler(
   async (request: NextRequest, context, session) => {
     const schoolFilter = getSchoolFilter(session)
 
+    // For books, filter through library relation
+    const bookWhere = schoolFilter.schoolId
+      ? { library: { schoolId: schoolFilter.schoolId } }
+      : {}
+
     // Get various library statistics
     const totalBooks = await prisma.book.count({
-      where: schoolFilter
+      where: bookWhere
     })
 
-    const totalIssued = await prisma.bookIssue.count({
+    const totalIssued = await prisma.libraryIssue.count({
       where: {
         status: 'ISSUED',
-        book: schoolFilter.schoolId ? {
-          schoolId: schoolFilter.schoolId
-        } : undefined
+        book: bookWhere
       }
     })
 
-    const totalReturned = await prisma.bookIssue.count({
+    const totalReturned = await prisma.libraryIssue.count({
       where: {
         status: 'RETURNED',
-        book: schoolFilter.schoolId ? {
-          schoolId: schoolFilter.schoolId
-        } : undefined
+        book: bookWhere
       }
     })
 
     const today = new Date()
-    const overdueCount = await prisma.bookIssue.count({
+    const overdueCount = await prisma.libraryIssue.count({
       where: {
         status: 'ISSUED',
         dueDate: {
           lt: today
         },
-        book: schoolFilter.schoolId ? {
-          schoolId: schoolFilter.schoolId
-        } : undefined
+        book: bookWhere
       }
     })
 
     // Get most issued books
-    const mostIssuedBooks = await prisma.bookIssue.groupBy({
+    const mostIssuedBooks = await prisma.libraryIssue.groupBy({
       by: ['bookId'],
       _count: {
         bookId: true
       },
       where: {
-        book: schoolFilter.schoolId ? {
-          schoolId: schoolFilter.schoolId
-        } : undefined
+        book: bookWhere
       },
       orderBy: {
         _count: {
@@ -72,7 +69,7 @@ export const GET = withApiHandler(
         id: {
           in: bookIds
         },
-        ...schoolFilter
+        ...bookWhere
       }
     })
 

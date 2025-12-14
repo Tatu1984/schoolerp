@@ -52,7 +52,19 @@ export const PUT = withApiHandler(
 
     const asset = await prisma.asset.update({
       where: { id: params.id },
-      data: data!,
+      data: {
+        ...(data!.name && { name: data!.name }),
+        ...(data!.code && { code: data!.code }),
+        ...(data!.assetType && { assetType: data!.assetType }),
+        ...(data!.description !== undefined && { description: data!.description }),
+        ...(data!.purchaseDate && { purchaseDate: new Date(data!.purchaseDate) }),
+        ...(data!.purchasePrice !== undefined && { purchasePrice: data!.purchasePrice }),
+        ...(data!.currentValue !== undefined && { currentValue: data!.currentValue }),
+        ...(data!.location !== undefined && { location: data!.location }),
+        ...(data!.condition !== undefined && { condition: data!.condition }),
+        ...(data!.isDurable !== undefined && { isDurable: data!.isDurable }),
+        ...(data!.isActive !== undefined && { isActive: data!.isActive }),
+      },
     })
 
     return successResponse(asset)

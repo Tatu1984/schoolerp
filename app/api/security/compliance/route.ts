@@ -30,19 +30,16 @@ export const GET = withApiHandler(
     // 2. Fetch data retention policies
     // 3. Calculate compliance score
 
-    // For now, returning mock data
+    // Fetch compliance records
     const compliance: ComplianceData = {
       gdprCompliance: await prisma.complianceRecord.findMany({
         where: {
-          type: 'GDPR',
+          complianceType: 'GDPR',
           ...schoolFilter
         },
         orderBy: { createdAt: 'desc' }
-      }).catch(() => []),
-      dataRetentionPolicies: await prisma.dataRetentionPolicy.findMany({
-        where: schoolFilter,
-        orderBy: { createdAt: 'desc' }
-      }).catch(() => []),
+      }),
+      dataRetentionPolicies: [], // DataRetentionPolicy model doesn't exist
       complianceScore: 0
     }
 
@@ -69,30 +66,23 @@ export const POST = withApiHandler(
     }
 
     const body = await request.json()
-    const { type, name, description, status } = body
+    const { complianceType, description, status, validFrom, validUntil, isActive } = body
 
-    // Apply school filter
-    const schoolFilter = getSchoolFilter(session)
+    const schoolId = session.user.schoolId
+    if (!schoolId) {
+      return errorResponse('School ID is required', 400)
+    }
 
     // Create a new compliance record
     const complianceRecord = await prisma.complianceRecord.create({
       data: {
-        type: type || 'GDPR',
-        name,
+        schoolId,
+        complianceType: complianceType || 'GDPR',
         description,
-        status: status || 'pending',
-        ...schoolFilter
-      }
-    }).catch(() => {
-      // If table doesn't exist, return mock data
-      return {
-        id: Date.now().toString(),
-        type: type || 'GDPR',
-        name,
-        description,
-        status: status || 'pending',
-        createdAt: new Date(),
-        ...schoolFilter
+        status: status || 'ACTIVE',
+        validFrom: validFrom ? new Date(validFrom) : new Date(),
+        validUntil: validUntil ? new Date(validUntil) : null,
+        isActive: isActive ?? true,
       }
     })
 

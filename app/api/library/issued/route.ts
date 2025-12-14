@@ -17,14 +17,14 @@ export const GET = withApiHandler(
     const where = {
       status: 'ISSUED' as const,
       book: schoolFilter.schoolId ? {
-        schoolId: schoolFilter.schoolId
+        library: { schoolId: schoolFilter.schoolId }
       } : undefined
     }
 
     if (usePagination) {
       const params = getPaginationParams(request)
       const [issuedBooks, total] = await Promise.all([
-        prisma.bookIssue.findMany({
+        prisma.libraryIssue.findMany({
           where,
           include: {
             book: true,
@@ -34,18 +34,17 @@ export const GET = withApiHandler(
                 section: true,
               }
             },
-            issuedBy: true,
           },
           orderBy: { issueDate: 'desc' },
           skip: params.skip,
           take: params.limit,
         }),
-        prisma.bookIssue.count({ where })
+        prisma.libraryIssue.count({ where })
       ])
 
       return paginatedResponse(issuedBooks, total, params)
     } else {
-      const issuedBooks = await prisma.bookIssue.findMany({
+      const issuedBooks = await prisma.libraryIssue.findMany({
         where,
         include: {
           book: true,
@@ -55,7 +54,6 @@ export const GET = withApiHandler(
               section: true,
             }
           },
-          issuedBy: true,
         },
         orderBy: { issueDate: 'desc' }
       })

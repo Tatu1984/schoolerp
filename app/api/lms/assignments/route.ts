@@ -3,24 +3,23 @@ import prisma from '@/lib/prisma'
 import {
   withApiHandler,
   getSchoolFilter,
-  getPaginationParams,
   successResponse,
   validationErrorResponse,
   validateBody
 } from '@/lib/api-utils'
 import { assignmentSchema } from '@/lib/validations'
+import { Prisma } from '@prisma/client'
 
 export const GET = withApiHandler(
   async (request: NextRequest, { params }, session) => {
     const schoolFilter = getSchoolFilter(session)
 
     const assignments = await prisma.assignment.findMany({
-      where: schoolFilter,
+      where: schoolFilter.schoolId ? {
+        course: { schoolId: schoolFilter.schoolId }
+      } : {},
       include: {
         course: true,
-        class: true,
-        section: true,
-        createdBy: true,
         submissions: {
           include: {
             student: true,
@@ -43,24 +42,30 @@ export const POST = withApiHandler(
       return validationErrorResponse(errors)
     }
 
-    const schoolFilter = getSchoolFilter(session)
+    // Verify course exists and belongs to user's school
+    const course = await prisma.course.findFirst({
+      where: {
+        id: data!.courseId,
+        ...(session?.user.schoolId && { schoolId: session.user.schoolId }),
+      }
+    })
 
-    // Apply school filter
-    const assignmentData = {
-      ...data!,
-      schoolId: session?.user.schoolId,
-      createdById: session?.user.id,
-      dueDate: data!.dueDate ? new Date(data!.dueDate) : null,
-      totalMarks: data!.totalMarks,
+    if (!course) {
+      return validationErrorResponse({ courseId: ['Course not found'] })
     }
 
     const assignment = await prisma.assignment.create({
-      data: assignmentData,
+      data: {
+        courseId: data!.courseId,
+        title: data!.title,
+        description: data!.description,
+        dueDate: new Date(data!.dueDate),
+        maxScore: data!.maxScore,
+        attachments: data!.attachments as Prisma.InputJsonValue | undefined,
+        isActive: data!.isActive,
+      },
       include: {
         course: true,
-        class: true,
-        section: true,
-        createdBy: true
       }
     })
 

@@ -117,7 +117,7 @@ export const POST = withApiHandler(
           status: data.status,
           checkIn: data.checkIn ? new Date(data.checkIn) : null,
           checkOut: data.checkOut ? new Date(data.checkOut) : null,
-          notes: data.notes,
+          remarks: data.remarks,
         },
         include: {
           staff: {
@@ -141,7 +141,7 @@ export const POST = withApiHandler(
           status: data.status,
           checkIn: data.checkIn ? new Date(data.checkIn) : null,
           checkOut: data.checkOut ? new Date(data.checkOut) : null,
-          notes: data.notes,
+          remarks: data.remarks,
         },
         include: {
           staff: {

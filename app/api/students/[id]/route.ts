@@ -12,6 +12,7 @@ import {
   AuthenticatedSession,
 } from '@/lib/api-utils'
 import { studentUpdateSchema } from '@/lib/validations'
+import { Prisma } from '@prisma/client'
 
 export const GET = withApiHandler(
   async (_request: NextRequest, context, session: AuthenticatedSession | null) => {
@@ -59,15 +60,15 @@ export const GET = withApiHandler(
         transport: {
           include: {
             route: { select: { id: true, name: true } },
-            stop: { select: { id: true, name: true, pickupTime: true, dropTime: true } },
+            stop: { select: { id: true, name: true, arrivalTime: true, sequence: true } },
           },
         },
         hostel: {
           include: {
-            hostel: { select: { id: true, name: true, type: true } },
+            hostel: { select: { id: true, name: true, code: true } },
             bed: {
               include: {
-                room: { select: { id: true, roomNumber: true, type: true } },
+                room: { select: { id: true, number: true, type: true } },
               },
             },
           },
@@ -127,13 +128,32 @@ export const PUT = withApiHandler(
       }
     }
 
+    const updateData: Record<string, unknown> = {}
+    if (data.firstName !== undefined) updateData.firstName = data.firstName
+    if (data.lastName !== undefined) updateData.lastName = data.lastName
+    if (data.email !== undefined) updateData.email = data.email
+    if (data.phone !== undefined) updateData.phone = data.phone
+    if (data.dateOfBirth !== undefined) updateData.dateOfBirth = new Date(data.dateOfBirth)
+    if (data.gender !== undefined) updateData.gender = data.gender
+    if (data.bloodGroup !== undefined) updateData.bloodGroup = data.bloodGroup
+    if (data.nationality !== undefined) updateData.nationality = data.nationality
+    if (data.religion !== undefined) updateData.religion = data.religion
+    if (data.address !== undefined) updateData.address = data.address
+    if (data.branchId !== undefined) updateData.branchId = data.branchId
+    if (data.classId !== undefined) updateData.classId = data.classId
+    if (data.sectionId !== undefined) updateData.sectionId = data.sectionId
+    if (data.rollNumber !== undefined) updateData.rollNumber = data.rollNumber
+    if (data.admissionDate !== undefined) updateData.admissionDate = new Date(data.admissionDate)
+    if (data.previousSchool !== undefined) updateData.previousSchool = data.previousSchool
+    if (data.medicalInfo !== undefined) updateData.medicalInfo = data.medicalInfo as Prisma.InputJsonValue | undefined
+    if (data.documents !== undefined) updateData.documents = data.documents as Prisma.InputJsonValue | undefined
+    if (data.customFields !== undefined) updateData.customFields = data.customFields as Prisma.InputJsonValue | undefined
+    if (data.photo !== undefined) updateData.photo = data.photo
+    if (data.isActive !== undefined) updateData.isActive = data.isActive
+
     const student = await prisma.student.update({
       where: { id },
-      data: {
-        ...data,
-        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
-        admissionDate: data.admissionDate ? new Date(data.admissionDate) : undefined,
-      },
+      data: updateData,
       include: {
         school: { select: { id: true, name: true } },
         class: { select: { id: true, name: true } },

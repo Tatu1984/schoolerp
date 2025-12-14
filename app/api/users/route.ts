@@ -93,8 +93,8 @@ export const POST = withApiHandler(
     }
 
     const schoolId = data.schoolId || session.user.schoolId
-    if (!schoolId && session.user.role !== 'SUPER_ADMIN') {
-      return errorResponse('School ID is required')
+    if (!schoolId) {
+      return errorResponse('School ID is required', 400)
     }
 
     // Check email uniqueness

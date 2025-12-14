@@ -15,7 +15,8 @@ interface LoginResponse {
   user: {
     id: string
     email: string
-    name: string
+    firstName: string
+    lastName: string
     role: string
     schoolId: string | null
     isActive: boolean

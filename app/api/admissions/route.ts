@@ -82,6 +82,15 @@ export const POST = withApiHandler(
       return errorResponse('School ID is required')
     }
 
+    // Get the current academic year
+    const currentAcademicYear = await prisma.academicYear.findFirst({
+      where: { schoolId, isCurrent: true },
+    })
+
+    if (!currentAcademicYear) {
+      return validationErrorResponse({ academicYear: ['No active academic year found'] })
+    }
+
     // Generate unique inquiry number
     const lastAdmission = await prisma.admission.findFirst({
       where: { schoolId },
@@ -114,15 +123,28 @@ export const POST = withApiHandler(
 
     const admission = await prisma.admission.create({
       data: {
-        ...data,
-        schoolId,
+        school: { connect: { id: schoolId } },
+        academicYear: { connect: { id: currentAcademicYear.id } },
         inquiryNumber,
-        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
-        testDate: data.testDate ? new Date(data.testDate) : null,
-        interviewDate: data.interviewDate ? new Date(data.interviewDate) : null,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : new Date(),
+        gender: data.gender || 'OTHER',
+        parentName: data.parentName,
+        parentPhone: data.parentPhone,
+        parentEmail: data.parentEmail,
+        address: data.address,
+        appliedClass: data.appliedClass,
+        previousSchool: data.previousSchool,
+        status: data.status,
+        testDate: data.testDate ? new Date(data.testDate) : undefined,
+        testScore: data.testScore,
+        interviewDate: data.interviewDate ? new Date(data.interviewDate) : undefined,
+        interviewNotes: data.interviewNotes,
       },
       include: {
         school: { select: { id: true, name: true } },
+        academicYear: { select: { id: true, name: true } },
       },
     })
 

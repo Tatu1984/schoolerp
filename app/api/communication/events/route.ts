@@ -36,7 +36,7 @@ export const GET = withApiHandler(
     const [events, total] = await Promise.all([
       prisma.event.findMany({
         where,
-        orderBy: { startDate: 'desc' },
+        orderBy: { eventDate: 'desc' },
         skip: pagination.skip,
         take: pagination.limit
       }),
@@ -70,8 +70,18 @@ export const POST = withApiHandler(
     }
 
     // Create event
+    const data = validation.data!
     const event = await prisma.event.create({
-      data: validation.data!
+      data: {
+        schoolId: data.schoolId,
+        title: data.title,
+        description: data.description,
+        eventDate: new Date(data.eventDate),
+        location: data.location,
+        organizer: data.organizer,
+        isPublic: data.isPublic,
+        isActive: data.isActive,
+      }
     })
 
     return successResponse(event, 201)

@@ -33,9 +33,21 @@ export const PUT = withApiHandler(
       return validationErrorResponse(errors)
     }
 
+    const updateData: Record<string, unknown> = {}
+    if (data?.number !== undefined) updateData.number = data.number
+    if (data?.type !== undefined) updateData.type = data.type
+    if (data?.capacity !== undefined) updateData.capacity = data.capacity
+    if (data?.routeId !== undefined) updateData.routeId = data.routeId
+    if (data?.driverName !== undefined) updateData.driverName = data.driverName
+    if (data?.driverPhone !== undefined) updateData.driverPhone = data.driverPhone
+    if (data?.driverLicense !== undefined) updateData.driverLicense = data.driverLicense
+    if (data?.registrationNo !== undefined) updateData.registrationNo = data.registrationNo
+    if (data?.insurance !== undefined) updateData.insurance = data.insurance
+    if (data?.isActive !== undefined) updateData.isActive = data.isActive
+
     const vehicle = await prisma.vehicle.update({
       where: { id },
-      data: data!,
+      data: updateData,
       include: {
         route: true,
       },

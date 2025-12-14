@@ -21,14 +21,14 @@ export const GET = withApiHandler(
         lt: today
       },
       book: schoolFilter.schoolId ? {
-        schoolId: schoolFilter.schoolId
+        library: { schoolId: schoolFilter.schoolId }
       } : undefined
     }
 
     if (usePagination) {
       const params = getPaginationParams(request)
       const [overdueBooks, total] = await Promise.all([
-        prisma.bookIssue.findMany({
+        prisma.libraryIssue.findMany({
           where,
           include: {
             book: true,
@@ -38,18 +38,17 @@ export const GET = withApiHandler(
                 section: true,
               }
             },
-            issuedBy: true,
           },
           orderBy: { dueDate: 'asc' },
           skip: params.skip,
           take: params.limit,
         }),
-        prisma.bookIssue.count({ where })
+        prisma.libraryIssue.count({ where })
       ])
 
       return paginatedResponse(overdueBooks, total, params)
     } else {
-      const overdueBooks = await prisma.bookIssue.findMany({
+      const overdueBooks = await prisma.libraryIssue.findMany({
         where,
         include: {
           book: true,
@@ -59,7 +58,6 @@ export const GET = withApiHandler(
               section: true,
             }
           },
-          issuedBy: true,
         },
         orderBy: { dueDate: 'asc' }
       })

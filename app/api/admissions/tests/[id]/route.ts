@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import prisma from '@/lib/prisma'
 import {
   withApiHandler,
   getSchoolFilter,
@@ -7,12 +7,13 @@ import {
   notFoundResponse,
   validationErrorResponse,
   validateBody,
+  AuthenticatedSession,
 } from '@/lib/api-utils'
 import { admissionSchema } from '@/lib/validations'
 
 export const PUT = withApiHandler(
-  async (request: NextRequest, context, session) => {
-    const { id } = context.params
+  async (request: NextRequest, context, session: AuthenticatedSession | null) => {
+    const { id } = await context.params
     const schoolFilter = getSchoolFilter(session)
     const { data, errors } = await validateBody(request, admissionSchema.partial())
 
@@ -21,7 +22,7 @@ export const PUT = withApiHandler(
     }
 
     // Check if test record exists and belongs to user's school
-    const existing = await prisma.admissionProspect.findFirst({
+    const existing = await prisma.admission.findFirst({
       where: { id, ...schoolFilter },
     })
 
@@ -29,27 +30,24 @@ export const PUT = withApiHandler(
       return notFoundResponse('Test record not found')
     }
 
-    const test = await prisma.admissionProspect.update({
+    const test = await prisma.admission.update({
       where: { id },
       data: {
-        firstName: data!.firstName,
-        lastName: data!.lastName,
-        dateOfBirth: data!.dateOfBirth ? new Date(data!.dateOfBirth) : undefined,
-        gender: data!.gender,
-        parentName: data!.parentName,
-        parentPhone: data!.parentPhone,
-        parentEmail: data!.parentEmail,
-        address: data!.address,
-        classAppliedFor: data!.classAppliedFor,
-        previousSchool: data!.previousSchool,
-        status: data!.status,
-        email: data!.email,
-        phone: data!.phone,
-        testDate: data!.testDate ? new Date(data!.testDate) : undefined,
-        testScore: data!.testScore,
-        interviewDate: data!.interviewDate ? new Date(data!.interviewDate) : undefined,
-        interviewNotes: data!.interviewNotes,
-        documents: data!.documents,
+        ...(data!.firstName && { firstName: data!.firstName }),
+        ...(data!.lastName && { lastName: data!.lastName }),
+        ...(data!.dateOfBirth && { dateOfBirth: new Date(data!.dateOfBirth) }),
+        ...(data!.gender && { gender: data!.gender }),
+        ...(data!.parentName && { parentName: data!.parentName }),
+        ...(data!.parentPhone && { parentPhone: data!.parentPhone }),
+        ...(data!.parentEmail !== undefined && { parentEmail: data!.parentEmail }),
+        ...(data!.address !== undefined && { address: data!.address }),
+        ...(data!.appliedClass && { appliedClass: data!.appliedClass }),
+        ...(data!.previousSchool !== undefined && { previousSchool: data!.previousSchool }),
+        ...(data!.status && { status: data!.status }),
+        ...(data!.testDate && { testDate: new Date(data!.testDate) }),
+        ...(data!.testScore !== undefined && { testScore: data!.testScore }),
+        ...(data!.interviewDate && { interviewDate: new Date(data!.interviewDate) }),
+        ...(data!.interviewNotes !== undefined && { interviewNotes: data!.interviewNotes }),
       },
     })
 
@@ -59,12 +57,12 @@ export const PUT = withApiHandler(
 )
 
 export const DELETE = withApiHandler(
-  async (request: NextRequest, context, session) => {
-    const { id } = context.params
+  async (_request: NextRequest, context, session: AuthenticatedSession | null) => {
+    const { id } = await context.params
     const schoolFilter = getSchoolFilter(session)
 
     // Check if test record exists and belongs to user's school
-    const existing = await prisma.admissionProspect.findFirst({
+    const existing = await prisma.admission.findFirst({
       where: { id, ...schoolFilter },
     })
 
@@ -72,7 +70,7 @@ export const DELETE = withApiHandler(
       return notFoundResponse('Test record not found')
     }
 
-    await prisma.admissionProspect.delete({
+    await prisma.admission.delete({
       where: { id },
     })
 

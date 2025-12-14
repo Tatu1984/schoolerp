@@ -87,10 +87,7 @@ export const PUT = withApiHandler(
 
     const fee = await prisma.fee.update({
       where: { id },
-      data: {
-        ...data,
-        dueDate: data.dueDate ? new Date(data.dueDate) : undefined,
-      },
+      data,
       include: {
         school: { select: { id: true, name: true } },
         class: { select: { id: true, name: true } },

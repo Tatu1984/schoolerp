@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import prisma from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 import {
   withApiHandler,
   successResponse,
@@ -75,14 +76,26 @@ export const PUT = withApiHandler(
       return errorResponse('Invalid request body')
     }
 
+    // Extract documents and handle null specifically for Prisma JSON fields
+    const { documents, ...restData } = data
+
+    const updateData: Prisma.AdmissionUpdateInput = {
+      ...restData,
+      dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+      testDate: data.testDate ? new Date(data.testDate) : undefined,
+      interviewDate: data.interviewDate ? new Date(data.interviewDate) : undefined,
+    }
+
+    // Handle documents field - Prisma requires special handling for nullable JSON
+    if (documents !== undefined) {
+      updateData.documents = documents === null
+        ? Prisma.JsonNull
+        : (documents as Prisma.InputJsonValue)
+    }
+
     const admission = await prisma.admission.update({
       where: { id },
-      data: {
-        ...data,
-        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
-        testDate: data.testDate ? new Date(data.testDate) : undefined,
-        interviewDate: data.interviewDate ? new Date(data.interviewDate) : undefined,
-      },
+      data: updateData,
       include: {
         school: { select: { id: true, name: true } },
         academicYear: { select: { id: true, name: true } },

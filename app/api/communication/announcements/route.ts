@@ -70,10 +70,15 @@ export const POST = withApiHandler(
 
     const announcement = await prisma.announcement.create({
       data: {
-        ...data,
         schoolId,
+        title: data.title,
+        content: data.content,
+        targetRole: data.targetRole,
+        targetClass: data.targetClass,
+        priority: data.priority,
+        attachments: data.attachments as Prisma.InputJsonValue | undefined,
         publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
-        expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
+        isActive: data.isActive,
       },
       include: {
         school: { select: { id: true, name: true } },

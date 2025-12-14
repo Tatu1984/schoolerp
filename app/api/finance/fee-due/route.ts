@@ -14,18 +14,18 @@ export const GET = withApiHandler(
     const { searchParams } = new URL(request.url)
     const usePagination = searchParams.get('paginate') === 'true'
 
-    // Get all fee collections that are not fully paid
+    // Get all fee payments that are not fully paid
     const where = {
       ...schoolFilter,
       status: {
-        in: ['PENDING', 'PARTIAL'] as const
+        in: ['PENDING', 'PARTIAL'] as ('PENDING' | 'PARTIAL')[]
       }
     }
 
     if (usePagination) {
       const params = getPaginationParams(request)
-      const [feeCollections, total] = await Promise.all([
-        prisma.feeCollection.findMany({
+      const [feePayments, total] = await Promise.all([
+        prisma.feePayment.findMany({
           where,
           include: {
             student: {
@@ -34,18 +34,18 @@ export const GET = withApiHandler(
                 section: true,
               }
             },
-            feeStructure: true,
+            fee: true,
           },
           orderBy: { dueDate: 'asc' },
           skip: params.skip,
           take: params.limit,
         }),
-        prisma.feeCollection.count({ where })
+        prisma.feePayment.count({ where })
       ])
 
-      return paginatedResponse(feeCollections, total, params)
+      return paginatedResponse(feePayments, total, params)
     } else {
-      const feeCollections = await prisma.feeCollection.findMany({
+      const feePayments = await prisma.feePayment.findMany({
         where,
         include: {
           student: {
@@ -54,12 +54,12 @@ export const GET = withApiHandler(
               section: true,
             }
           },
-          feeStructure: true,
+          fee: true,
         },
         orderBy: { dueDate: 'asc' }
       })
 
-      return successResponse(feeCollections)
+      return successResponse(feePayments)
     }
   },
   { requireAuth: true, module: 'finance' }

@@ -10,6 +10,7 @@ import {
   AuthenticatedSession
 } from '@/lib/api-utils'
 import { announcementSchema } from '@/lib/validations'
+import { Prisma } from '@prisma/client'
 
 export const GET = withApiHandler(
   async (
@@ -65,9 +66,23 @@ export const PUT = withApiHandler(
       return notFoundResponse('Announcement not found')
     }
 
+    const data = validation.data!
+    const { attachments, publishedAt, ...restData } = data
+
+    const updateData: Prisma.AnnouncementUpdateInput = {
+      ...restData,
+      ...(publishedAt && { publishedAt: new Date(publishedAt) }),
+    }
+
+    if (attachments !== undefined) {
+      updateData.attachments = attachments === null
+        ? Prisma.JsonNull
+        : (attachments as Prisma.InputJsonValue)
+    }
+
     const announcement = await prisma.announcement.update({
       where: { id },
-      data: validation.data!
+      data: updateData
     })
 
     return successResponse(announcement)

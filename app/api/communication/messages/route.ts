@@ -39,7 +39,8 @@ export const GET = withApiHandler(
           sender: {
             select: {
               id: true,
-              name: true,
+              firstName: true,
+              lastName: true,
               email: true,
               role: true
             }
@@ -47,7 +48,8 @@ export const GET = withApiHandler(
           receiver: {
             select: {
               id: true,
-              name: true,
+              firstName: true,
+              lastName: true,
               email: true,
               role: true
             }
@@ -91,7 +93,8 @@ export const POST = withApiHandler(
         sender: {
           select: {
             id: true,
-            name: true,
+            firstName: true,
+            lastName: true,
             email: true,
             role: true
           }
@@ -99,7 +102,8 @@ export const POST = withApiHandler(
         receiver: {
           select: {
             id: true,
-            name: true,
+            firstName: true,
+            lastName: true,
             email: true,
             role: true
           }

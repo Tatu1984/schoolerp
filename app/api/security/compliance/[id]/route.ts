@@ -48,7 +48,7 @@ export const PUT = withApiHandler(
 
     const { id } = context.params
     const body = await request.json()
-    const { type, name, description, status } = body
+    const { complianceType, description, status, validFrom, validUntil, isActive } = body
 
     // Apply school filter
     const schoolFilter = getSchoolFilter(session)
@@ -66,26 +66,17 @@ export const PUT = withApiHandler(
     }
 
     // Update the compliance record
+    const updateData: Record<string, unknown> = {}
+    if (complianceType !== undefined) updateData.complianceType = complianceType
+    if (description !== undefined) updateData.description = description
+    if (status !== undefined) updateData.status = status
+    if (validFrom !== undefined) updateData.validFrom = new Date(validFrom)
+    if (validUntil !== undefined) updateData.validUntil = validUntil ? new Date(validUntil) : null
+    if (isActive !== undefined) updateData.isActive = isActive
+
     const updatedRecord = await prisma.complianceRecord.update({
       where: { id },
-      data: {
-        type,
-        name,
-        description,
-        status,
-        updatedAt: new Date()
-      }
-    }).catch(() => {
-      // If update fails, return mock data
-      return {
-        id,
-        type,
-        name,
-        description,
-        status,
-        updatedAt: new Date(),
-        ...schoolFilter
-      }
+      data: updateData
     })
 
     return successResponse(updatedRecord)

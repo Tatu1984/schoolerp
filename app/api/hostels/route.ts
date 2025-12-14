@@ -85,8 +85,14 @@ export const POST = withApiHandler(
 
     const hostel = await prisma.hostel.create({
       data: {
-        ...data,
         schoolId,
+        name: data.name,
+        code: data.code,
+        address: data.address,
+        warden: data.warden,
+        phone: data.phone,
+        capacity: data.capacity,
+        isActive: data.isActive,
       },
       include: {
         school: { select: { id: true, name: true } },

@@ -6,6 +6,7 @@ const optionalString = z.string().optional().nullable()
 const email = z.string().email('Invalid email address')
 const optionalEmail = z.string().email('Invalid email address').optional().nullable().or(z.literal(''))
 const phone = z.string().regex(/^[\d\s\-+()]+$/, 'Invalid phone number').optional().nullable()
+const requiredPhone = z.string().regex(/^[\d\s\-+()]+$/, 'Invalid phone number')
 const positiveNumber = z.number().positive('Must be a positive number')
 const nonNegativeNumber = z.number().min(0, 'Cannot be negative')
 const dateString = z.string().refine((val) => !val || !isNaN(Date.parse(val)), 'Invalid date')
@@ -14,12 +15,12 @@ const dateString = z.string().refine((val) => !val || !isNaN(Date.parse(val)), '
 const Gender = z.enum(['MALE', 'FEMALE', 'OTHER'])
 const BloodGroup = z.enum(['A_POSITIVE', 'A_NEGATIVE', 'B_POSITIVE', 'B_NEGATIVE', 'AB_POSITIVE', 'AB_NEGATIVE', 'O_POSITIVE', 'O_NEGATIVE'])
 const StaffType = z.enum(['TEACHING', 'NON_TEACHING', 'ADMINISTRATIVE', 'SUPPORT'])
-const FeeType = z.enum(['TUITION', 'ADMISSION', 'EXAM', 'LIBRARY', 'TRANSPORT', 'HOSTEL', 'LAB', 'SPORTS', 'COMPUTER', 'ACTIVITY', 'OTHER'])
+const FeeType = z.enum(['TUITION', 'ADMISSION', 'EXAMINATION', 'TRANSPORT', 'HOSTEL', 'LIBRARY', 'SPORTS', 'LABORATORY', 'UNIFORM', 'BOOKS', 'OTHER'])
 const FeeFrequency = z.enum(['ONE_TIME', 'MONTHLY', 'QUARTERLY', 'HALF_YEARLY', 'YEARLY'])
 const PaymentStatus = z.enum(['PENDING', 'PARTIAL', 'PAID', 'OVERDUE', 'CANCELLED'])
 const PaymentMode = z.enum(['CASH', 'CARD', 'BANK_TRANSFER', 'UPI', 'CHEQUE'])
-const AdmissionStatus = z.enum(['INQUIRY', 'PROSPECT', 'APPLICATION', 'ENTRANCE_TEST', 'INTERVIEW', 'APPROVED', 'ENROLLED', 'REJECTED', 'WITHDRAWN'])
-const AssetType = z.enum(['FURNITURE', 'ELECTRONICS', 'VEHICLE', 'BUILDING', 'SPORTS', 'LAB_EQUIPMENT', 'OTHER'])
+const AdmissionStatus = z.enum(['INQUIRY', 'PROSPECT', 'TEST_SCHEDULED', 'TEST_COMPLETED', 'INTERVIEW_SCHEDULED', 'APPROVED', 'REJECTED', 'WAITLISTED', 'ADMITTED', 'CANCELLED'])
+const AssetType = z.enum(['FURNITURE', 'EQUIPMENT', 'ELECTRONICS', 'VEHICLES', 'BOOKS', 'SPORTS', 'OTHER'])
 const IssueStatus = z.enum(['ISSUED', 'RETURNED', 'OVERDUE', 'LOST', 'DAMAGED'])
 const OrderStatus = z.enum(['PENDING', 'PREPARING', 'READY', 'DELIVERED', 'CANCELLED'])
 const MarketplaceOrderStatus = z.enum(['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'])
@@ -140,18 +141,22 @@ export const staffSchema = z.object({
   firstName: requiredString.max(100),
   lastName: requiredString.max(100),
   email: email.max(255),
-  phone: phone,
-  dateOfBirth: dateString.optional(),
+  phone: requiredPhone,
+  dateOfBirth: dateString,
   gender: Gender,
   bloodGroup: BloodGroup.optional().nullable(),
+  photo: optionalString,
   address: optionalString,
+  city: optionalString,
+  state: optionalString,
+  pincode: optionalString,
   schoolId: requiredString,
   branchId: optionalString,
   employeeId: requiredString.max(50),
   staffType: StaffType,
-  designation: optionalString,
+  designation: requiredString,
   department: optionalString,
-  joiningDate: dateString.optional(),
+  joiningDate: dateString,
   qualification: optionalString,
   experience: nonNegativeNumber.int().optional().nullable(),
   salary: nonNegativeNumber.optional().nullable(),
@@ -168,7 +173,7 @@ export const staffAttendanceSchema = z.object({
   status: z.enum(['PRESENT', 'ABSENT', 'LATE', 'HALF_DAY', 'ON_LEAVE']),
   checkIn: dateString.optional(),
   checkOut: dateString.optional(),
-  notes: optionalString,
+  remarks: optionalString,
 })
 
 export const leaveRequestSchema = z.object({
@@ -199,11 +204,9 @@ export const admissionSchema = z.object({
   studentId: optionalString,
   firstName: requiredString.max(100),
   lastName: requiredString.max(100),
-  email: optionalEmail,
-  phone: phone,
   dateOfBirth: dateString.optional(),
   gender: Gender.optional(),
-  classAppliedFor: requiredString,
+  appliedClass: requiredString,
   previousSchool: optionalString,
   parentName: requiredString.max(200),
   parentPhone: requiredString.regex(/^[\d\s\-+()]+$/, 'Invalid phone number'),
@@ -225,7 +228,6 @@ export const feeSchema = z.object({
   type: FeeType,
   amount: positiveNumber,
   frequency: FeeFrequency,
-  dueDate: dateString.optional(),
   description: optionalString,
   isActive: z.boolean().default(true),
 })
@@ -248,30 +250,34 @@ export const feePaymentSchema = z.object({
 export const expenseSchema = z.object({
   schoolId: requiredString,
   category: requiredString.max(100),
-  description: requiredString.max(500),
   amount: positiveNumber,
+  description: optionalString,
   date: dateString,
-  paymentMode: requiredString.max(50),
-  vendor: optionalString,
-  receiptNumber: optionalString,
+  paidTo: optionalString,
+  paymentMode: optionalString,
+  billNumber: optionalString,
   approvedBy: optionalString,
-  notes: optionalString,
 })
 
 // ============ LIBRARY ============
 export const bookSchema = z.object({
   title: requiredString.max(300),
-  schoolId: requiredString,
+  libraryId: requiredString,
   author: optionalString,
   isbn: optionalString,
   publisher: optionalString,
   category: optionalString,
+  edition: optionalString,
   language: optionalString,
   pages: nonNegativeNumber.int().optional().nullable(),
   quantity: positiveNumber.int().default(1),
   available: nonNegativeNumber.int().default(1),
+  price: nonNegativeNumber.optional().nullable(),
+  purchaseDate: dateString.optional(),
   location: optionalString,
   barcode: optionalString,
+  description: optionalString,
+  coverImage: optionalString,
   isActive: z.boolean().default(true),
 })
 
@@ -289,7 +295,8 @@ export const libraryIssueSchema = z.object({
 // ============ TRANSPORT ============
 export const routeSchema = z.object({
   name: requiredString.max(200),
-  schoolId: requiredString,
+  code: requiredString.max(50),
+  schoolId: optionalString,
   description: optionalString,
   isActive: z.boolean().default(true),
 })
@@ -297,24 +304,24 @@ export const routeSchema = z.object({
 export const stopSchema = z.object({
   name: requiredString.max(200),
   routeId: requiredString,
-  address: optionalString,
-  pickupTime: optionalString,
-  dropTime: optionalString,
+  location: optionalString,
+  arrivalTime: optionalString,
   fare: nonNegativeNumber.default(0),
   sequence: nonNegativeNumber.int().default(0),
+  isActive: z.boolean().default(true),
 })
 
 export const vehicleSchema = z.object({
-  schoolId: requiredString,
-  registrationNo: requiredString.max(50),
+  schoolId: optionalString,
+  number: requiredString.max(50),
+  registrationNo: optionalString,
   type: requiredString.max(50),
   capacity: positiveNumber.int(),
   routeId: optionalString,
   driverName: optionalString,
   driverPhone: phone,
   driverLicense: optionalString,
-  insuranceExpiry: dateString.optional(),
-  fitnessExpiry: dateString.optional(),
+  insurance: optionalString,
   isActive: z.boolean().default(true),
 })
 
@@ -351,12 +358,12 @@ export const vehicleTrackingSchema = z.object({
 // ============ HOSTEL ============
 export const hostelSchema = z.object({
   name: requiredString.max(200),
+  code: requiredString.max(50),
   schoolId: requiredString,
-  type: requiredString.max(50),
-  wardenName: optionalString,
-  wardenPhone: phone,
-  capacity: positiveNumber.int(),
   address: optionalString,
+  warden: optionalString,
+  phone: phone,
+  capacity: positiveNumber.int(),
   isActive: z.boolean().default(true),
 })
 
@@ -396,12 +403,13 @@ export const messMenuSchema = z.object({
 // ============ INVENTORY ============
 export const vendorSchema = z.object({
   name: requiredString.max(200),
+  code: requiredString.max(50),
   schoolId: requiredString,
   contactPerson: optionalString,
   phone: phone,
   email: optionalEmail,
   address: optionalString,
-  gstNumber: optionalString,
+  gst: optionalString,
   isActive: z.boolean().default(true),
 })
 
@@ -419,28 +427,29 @@ export const purchaseOrderSchema = z.object({
 export const assetSchema = z.object({
   name: requiredString.max(200),
   schoolId: requiredString,
-  type: AssetType,
-  assetCode: requiredString.max(50),
+  assetType: AssetType,
+  code: requiredString.max(50),
+  description: optionalString,
   purchaseDate: dateString.optional(),
   purchasePrice: nonNegativeNumber.optional(),
   currentValue: nonNegativeNumber.optional(),
   location: optionalString,
-  condition: z.enum(['NEW', 'GOOD', 'FAIR', 'POOR', 'DAMAGED', 'DISPOSED']).default('NEW'),
-  assignedTo: optionalString,
-  warrantyExpiry: dateString.optional(),
-  notes: optionalString,
+  condition: optionalString,
+  isDurable: z.boolean().default(true),
   isActive: z.boolean().default(true),
 })
 
 // ============ LMS ============
 export const courseSchema = z.object({
   name: requiredString.max(200),
-  schoolId: requiredString,
+  code: requiredString.max(50),
+  schoolId: optionalString,
   subjectId: optionalString,
   classId: optionalString,
   teacherId: optionalString,
   description: optionalString,
-  syllabus: optionalString,
+  startDate: dateString.optional(),
+  endDate: dateString.optional(),
   isActive: z.boolean().default(true),
 })
 
@@ -449,7 +458,7 @@ export const assignmentSchema = z.object({
   courseId: requiredString,
   description: optionalString,
   dueDate: dateString,
-  totalMarks: positiveNumber.int(),
+  maxScore: positiveNumber,
   attachments: z.record(z.unknown()).optional().nullable(),
   isActive: z.boolean().default(true),
 })
@@ -466,21 +475,19 @@ export const assignmentSubmissionSchema = z.object({
 })
 
 export const examSchema = z.object({
-  name: requiredString.max(200),
   courseId: requiredString,
+  title: requiredString.max(200),
+  description: optionalString,
   examDate: dateString,
-  duration: positiveNumber.int(),
-  totalMarks: positiveNumber.int(),
-  passingMarks: nonNegativeNumber.int(),
-  instructions: optionalString,
+  duration: positiveNumber.int().optional(),
+  maxScore: positiveNumber,
   isActive: z.boolean().default(true),
 })
 
 export const examResultSchema = z.object({
   examId: requiredString,
   studentId: requiredString,
-  marksObtained: nonNegativeNumber,
-  grade: optionalString,
+  score: nonNegativeNumber,
   remarks: optionalString,
 })
 
@@ -488,17 +495,9 @@ export const reportCardSchema = z.object({
   studentId: requiredString,
   academicYearId: requiredString,
   term: requiredString.max(50),
-  subjects: z.record(z.object({
-    marks: nonNegativeNumber,
-    grade: optionalString,
-    remarks: optionalString,
-  })),
-  totalMarks: nonNegativeNumber,
-  percentage: nonNegativeNumber,
-  rank: nonNegativeNumber.int().optional(),
-  attendance: nonNegativeNumber.optional(),
-  teacherRemarks: optionalString,
-  principalRemarks: optionalString,
+  grades: z.record(z.any()), // JSON field
+  overallScore: nonNegativeNumber.optional(),
+  remarks: optionalString,
   isPublished: z.boolean().default(false),
 })
 
@@ -507,10 +506,11 @@ export const announcementSchema = z.object({
   title: requiredString.max(200),
   schoolId: requiredString,
   content: requiredString,
-  targetAudience: z.array(z.string()).optional(),
+  targetRole: optionalString,
+  targetClass: optionalString,
   priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']).default('NORMAL'),
+  attachments: z.record(z.unknown()).optional().nullable(),
   publishedAt: dateString.optional(),
-  expiresAt: dateString.optional(),
   isActive: z.boolean().default(true),
 })
 
@@ -535,10 +535,10 @@ export const eventSchema = z.object({
   title: requiredString.max(200),
   schoolId: requiredString,
   description: optionalString,
-  startDate: dateString,
-  endDate: dateString,
+  eventDate: dateString,
   location: optionalString,
-  isAllDay: z.boolean().default(false),
+  organizer: optionalString,
+  isPublic: z.boolean().default(true),
   isActive: z.boolean().default(true),
 })
 

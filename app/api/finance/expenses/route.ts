@@ -26,7 +26,7 @@ export const GET = withApiHandler(
       const [expenses, total] = await Promise.all([
         prisma.expense.findMany({
           where,
-          orderBy: { expenseDate: 'desc' },
+          orderBy: { date: 'desc' },
           skip: params.skip,
           take: params.limit,
         }),
@@ -37,7 +37,7 @@ export const GET = withApiHandler(
     } else {
       const expenses = await prisma.expense.findMany({
         where,
-        orderBy: { expenseDate: 'desc' }
+        orderBy: { date: 'desc' }
       })
 
       return successResponse(expenses)
@@ -61,10 +61,15 @@ export const POST = withApiHandler(
 
     const expense = await prisma.expense.create({
       data: {
-        ...data!,
         schoolId,
+        category: data!.category,
         amount: data!.amount,
-        expenseDate: new Date(data!.date),
+        description: data!.description,
+        date: new Date(data!.date),
+        paidTo: data!.paidTo,
+        paymentMode: data!.paymentMode,
+        billNumber: data!.billNumber,
+        approvedBy: data!.approvedBy,
       }
     })
 

@@ -26,20 +26,11 @@ export const GET = withApiHandler(
       include: {
         school: { select: { id: true, name: true, code: true } },
         branch: { select: { id: true, name: true } },
-        user: {
-          select: {
-            id: true,
-            email: true,
-            role: true,
-            isActive: true,
-            lastLogin: true,
-          },
-        },
         attendance: {
           orderBy: { date: 'desc' },
           take: 30,
         },
-        leaves: {
+        leaveRequests: {
           orderBy: { startDate: 'desc' },
           take: 10,
         },
@@ -108,14 +99,30 @@ export const PUT = withApiHandler(
       }
     }
 
+    const updateData: Record<string, unknown> = {}
+    if (data.firstName !== undefined) updateData.firstName = data.firstName
+    if (data.lastName !== undefined) updateData.lastName = data.lastName
+    if (data.email !== undefined) updateData.email = data.email.toLowerCase()
+    if (data.phone !== undefined) updateData.phone = data.phone
+    if (data.dateOfBirth !== undefined) updateData.dateOfBirth = new Date(data.dateOfBirth)
+    if (data.gender !== undefined) updateData.gender = data.gender
+    if (data.bloodGroup !== undefined) updateData.bloodGroup = data.bloodGroup
+    if (data.address !== undefined) updateData.address = data.address
+    if (data.branchId !== undefined) updateData.branchId = data.branchId
+    if (data.staffType !== undefined) updateData.staffType = data.staffType
+    if (data.designation !== undefined) updateData.designation = data.designation
+    if (data.department !== undefined) updateData.department = data.department
+    if (data.joiningDate !== undefined) updateData.joiningDate = new Date(data.joiningDate)
+    if (data.qualification !== undefined) updateData.qualification = data.qualification
+    if (data.experience !== undefined) updateData.experience = data.experience
+    if (data.salary !== undefined) updateData.salary = data.salary
+    if (data.bankDetails !== undefined) updateData.bankDetails = data.bankDetails
+    if (data.documents !== undefined) updateData.documents = data.documents
+    if (data.isActive !== undefined) updateData.isActive = data.isActive
+
     const staff = await prisma.staff.update({
       where: { id },
-      data: {
-        ...data,
-        email: data.email ? data.email.toLowerCase() : undefined,
-        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
-        joiningDate: data.joiningDate ? new Date(data.joiningDate) : undefined,
-      },
+      data: updateData,
       include: {
         school: { select: { id: true, name: true } },
         branch: { select: { id: true, name: true } },

@@ -42,7 +42,7 @@ export const GET = withApiHandler(
           class: { select: { id: true, name: true, grade: true } },
           subject: { select: { id: true, name: true, code: true } },
           teacher: { select: { id: true, firstName: true, lastName: true } },
-          _count: { select: { assignments: true, exams: true, lessons: true } },
+          _count: { select: { assignments: true, exams: true } },
         },
         orderBy: { createdAt: 'desc' },
         skip: pagination.skip,
@@ -108,8 +108,16 @@ export const POST = withApiHandler(
 
     const course = await prisma.course.create({
       data: {
-        ...data,
         schoolId,
+        name: data.name,
+        code: data.code,
+        description: data.description,
+        classId: data.classId,
+        subjectId: data.subjectId,
+        teacherId: data.teacherId,
+        startDate: data.startDate ? new Date(data.startDate) : undefined,
+        endDate: data.endDate ? new Date(data.endDate) : undefined,
+        isActive: data.isActive,
       },
       include: {
         school: { select: { id: true, name: true } },

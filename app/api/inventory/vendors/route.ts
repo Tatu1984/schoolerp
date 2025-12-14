@@ -71,8 +71,15 @@ export const POST = withApiHandler(
 
     const vendor = await prisma.vendor.create({
       data: {
-        ...data!,
-        schoolId
+        schoolId,
+        name: data!.name,
+        code: data!.code,
+        contactPerson: data!.contactPerson,
+        phone: data!.phone,
+        email: data!.email,
+        address: data!.address,
+        gst: data!.gst,
+        isActive: data!.isActive,
       }
     })
 

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import prisma from '@/lib/prisma'
 import {
   withApiHandler,
   getSchoolFilter,
@@ -13,7 +13,7 @@ export const GET = withApiHandler(
     const { page, limit, skip } = getPaginationParams(request)
 
     const [approved, total] = await Promise.all([
-      prisma.admissionProspect.findMany({
+      prisma.admission.findMany({
         where: {
           ...schoolFilter,
           status: 'APPROVED',
@@ -22,7 +22,7 @@ export const GET = withApiHandler(
         skip,
         take: limit,
       }),
-      prisma.admissionProspect.count({
+      prisma.admission.count({
         where: {
           ...schoolFilter,
           status: 'APPROVED',

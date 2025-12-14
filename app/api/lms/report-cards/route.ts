@@ -8,15 +8,16 @@ import {
   validateBody
 } from '@/lib/api-utils'
 import { reportCardSchema } from '@/lib/validations'
+import { Prisma } from '@prisma/client'
 
 export const GET = withApiHandler(
   async (request: NextRequest, { params }, session) => {
     const schoolFilter = getSchoolFilter(session)
 
     const reportCards = await prisma.reportCard.findMany({
-      where: {
-        student: schoolFilter
-      },
+      where: schoolFilter.schoolId ? {
+        student: { schoolId: schoolFilter.schoolId }
+      } : {},
       include: {
         student: true,
         academicYear: true
@@ -37,8 +38,28 @@ export const POST = withApiHandler(
       return validationErrorResponse(errors)
     }
 
+    // Verify student exists and belongs to user's school
+    const student = await prisma.student.findFirst({
+      where: {
+        id: data!.studentId,
+        ...(session?.user.schoolId && { schoolId: session.user.schoolId }),
+      }
+    })
+
+    if (!student) {
+      return validationErrorResponse({ studentId: ['Student not found'] })
+    }
+
     const reportCard = await prisma.reportCard.create({
-      data: data!,
+      data: {
+        studentId: data!.studentId,
+        academicYearId: data!.academicYearId,
+        term: data!.term,
+        grades: data!.grades as Prisma.InputJsonValue,
+        overallScore: data!.overallScore,
+        remarks: data!.remarks,
+        isPublished: data!.isPublished,
+      },
       include: {
         student: true,
         academicYear: true
