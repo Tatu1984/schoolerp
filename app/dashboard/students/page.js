@@ -23,13 +23,13 @@ export default function StudentsPage() {
       ])
 
       if (studentsRes.ok) {
-        const data = await studentsRes.json()
-        setStudents(data)
+        const result = await studentsRes.json()
+        setStudents(result.data || [])
       }
 
       if (classesRes.ok) {
-        const data = await classesRes.json()
-        setClasses(data)
+        const result = await classesRes.json()
+        setClasses(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching data:', error)

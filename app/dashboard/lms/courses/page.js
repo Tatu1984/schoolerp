@@ -36,15 +36,15 @@ export default function CoursesPage() {
         fetch('/api/classes')
       ])
 
-      const [coursesData, schoolsData, classesData] = await Promise.all([
+      const [coursesResult, schoolsResult, classesResult] = await Promise.all([
         coursesRes.json(),
         schoolsRes.json(),
         classesRes.json()
       ])
 
-      setCourses(coursesData)
-      setSchools(schoolsData)
-      setClasses(classesData)
+      setCourses(coursesResult.data || [])
+      setSchools(schoolsResult.data || [])
+      setClasses(classesResult.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {

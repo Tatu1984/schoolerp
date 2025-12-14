@@ -35,8 +35,8 @@ export default function BooksPage() {
     setLoading(true)
     try {
       const res = await fetch('/api/books')
-      const data = await res.json()
-      setBooks(data)
+      const result = await res.json()
+      setBooks(result.data || [])
     } catch (error) {
       console.error('Error fetching books:', error)
     } finally {

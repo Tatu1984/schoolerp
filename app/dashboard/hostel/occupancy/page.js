@@ -18,8 +18,8 @@ export default function OccupancyPage() {
     try {
       const res = await fetch('/api/hostel/occupancy')
       if (res.ok) {
-        const data = await res.json()
-        setOccupancy(data)
+        const result = await res.json()
+        setOccupancy(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching occupancy:', error)

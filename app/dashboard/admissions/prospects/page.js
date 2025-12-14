@@ -33,8 +33,8 @@ export default function ProspectsPage() {
     try {
       const res = await fetch('/api/admissions/prospects')
       if (res.ok) {
-        const data = await res.json()
-        setProspects(data)
+        const result = await res.json()
+        setProspects(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching prospects:', error)

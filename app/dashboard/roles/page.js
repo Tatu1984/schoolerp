@@ -39,8 +39,8 @@ export default function RolesPage() {
   const fetchSchools = async () => {
     try {
       const res = await fetch('/api/schools')
-      const data = await res.json()
-      setSchools(data)
+      const result = await res.json()
+      setSchools(result.data || [])
     } catch (error) {
       console.error('Error fetching schools:', error)
     }
@@ -50,8 +50,8 @@ export default function RolesPage() {
     setLoading(true)
     try {
       const res = await fetch('/api/roles')
-      const data = await res.json()
-      setRoles(data)
+      const result = await res.json()
+      setRoles(result.data || [])
     } catch (error) {
       console.error('Error fetching roles:', error)
     } finally {

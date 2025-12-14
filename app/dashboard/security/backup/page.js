@@ -16,8 +16,8 @@ export default function DataBackupPage() {
     try {
       const res = await fetch('/api/security/backups')
       if (res.ok) {
-        const data = await res.json()
-        setBackups(data)
+        const result = await res.json()
+        setBackups(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching backups:', error)

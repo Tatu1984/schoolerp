@@ -32,13 +32,13 @@ export default function PurchaseOrdersPage() {
       ])
 
       if (ordersRes.ok) {
-        const data = await ordersRes.json()
-        setOrders(data)
+        const result = await ordersRes.json()
+        setOrders(result.data || [])
       }
 
       if (vendorsRes.ok) {
-        const data = await vendorsRes.json()
-        setVendors(data)
+        const result = await vendorsRes.json()
+        setVendors(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching data:', error)

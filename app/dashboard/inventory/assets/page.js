@@ -37,13 +37,13 @@ export default function AssetsPage() {
         fetch('/api/schools')
       ])
 
-      const [assetsData, schoolsData] = await Promise.all([
+      const [assetsResult, schoolsResult] = await Promise.all([
         assetsRes.json(),
         schoolsRes.json()
       ])
 
-      setAssets(assetsData)
-      setSchools(schoolsData)
+      setAssets(assetsResult.data || [])
+      setSchools(schoolsResult.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {

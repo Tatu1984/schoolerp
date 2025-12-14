@@ -19,7 +19,8 @@ export default function TrackingPage() {
     try {
       const res = await fetch('/api/transport/tracking')
       if (res.ok) {
-        const data = await res.json()
+        const result = await res.json()
+        const data = result.data || []
         setVehicles(data)
         if (!selectedVehicle && data.length > 0) {
           setSelectedVehicle(data[0])

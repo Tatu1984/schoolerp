@@ -30,12 +30,13 @@ export default function ClassesPage() {
       ])
 
       if (classesRes.ok) {
-        const classesData = await classesRes.json()
-        setClasses(classesData)
+        const classesResult = await classesRes.json()
+        setClasses(classesResult.data || [])
       }
 
       if (yearsRes.ok) {
-        const yearsData = await yearsRes.json()
+        const yearsResult = await yearsRes.json()
+        const yearsData = yearsResult.data || []
         setAcademicYears(yearsData)
         const current = yearsData.find(y => y.isCurrent)
         if (current && !formData.academicYearId) {

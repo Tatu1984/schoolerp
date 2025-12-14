@@ -28,8 +28,8 @@ export default function VehiclesPage() {
     try {
       const res = await fetch('/api/transport/vehicles')
       if (res.ok) {
-        const data = await res.json()
-        setVehicles(data)
+        const result = await res.json()
+        setVehicles(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching vehicles:', error)

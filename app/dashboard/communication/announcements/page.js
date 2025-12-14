@@ -33,13 +33,13 @@ export default function AnnouncementsPage() {
         fetch('/api/schools')
       ])
 
-      const [announcementsData, schoolsData] = await Promise.all([
+      const [announcementsResult, schoolsResult] = await Promise.all([
         announcementsRes.json(),
         schoolsRes.json()
       ])
 
-      setAnnouncements(announcementsData)
-      setSchools(schoolsData)
+      setAnnouncements(announcementsResult.data || [])
+      setSchools(schoolsResult.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {

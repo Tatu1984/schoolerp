@@ -60,8 +60,8 @@ export default function AddStudentPage() {
     try {
       const res = await fetch('/api/classes')
       if (res.ok) {
-        const data = await res.json()
-        setClasses(data)
+        const result = await res.json()
+        setClasses(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching classes:', error)
@@ -72,8 +72,8 @@ export default function AddStudentPage() {
     try {
       const res = await fetch(`/api/sections?classId=${classId}`)
       if (res.ok) {
-        const data = await res.json()
-        setSections(data)
+        const result = await res.json()
+        setSections(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching sections:', error)

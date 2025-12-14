@@ -32,18 +32,18 @@ export default function IssueReturnPage() {
       ])
 
       if (booksRes.ok) {
-        const data = await booksRes.json()
-        setBooks(data)
+        const result = await booksRes.json()
+        setBooks(result.data || [])
       }
 
       if (studentsRes.ok) {
-        const data = await studentsRes.json()
-        setStudents(data)
+        const result = await studentsRes.json()
+        setStudents(result.data || [])
       }
 
       if (issuedRes.ok) {
-        const data = await issuedRes.json()
-        setIssuedBooks(data)
+        const result = await issuedRes.json()
+        setIssuedBooks(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching data:', error)

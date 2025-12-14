@@ -31,15 +31,15 @@ export default function SectionsPage() {
         fetch('/api/staff')
       ])
 
-      const [sectionsData, classesData, staffData] = await Promise.all([
+      const [sectionsResult, classesResult, staffResult] = await Promise.all([
         sectionsRes.json(),
         classesRes.json(),
         staffRes.json()
       ])
 
-      setSections(sectionsData)
-      setClasses(classesData)
-      setStaff(staffData)
+      setSections(sectionsResult.data || [])
+      setClasses(classesResult.data || [])
+      setStaff(staffResult.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {

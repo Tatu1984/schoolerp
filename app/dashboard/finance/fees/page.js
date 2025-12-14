@@ -25,8 +25,8 @@ export default function FeesPage() {
     try {
       const res = await fetch('/api/fees')
       if (res.ok) {
-        const data = await res.json()
-        setFees(data)
+        const result = await res.json()
+        setFees(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching fees:', error)

@@ -16,8 +16,8 @@ export default function ApprovedApplicationsPage() {
     try {
       const res = await fetch('/api/admissions/approved')
       if (res.ok) {
-        const data = await res.json()
-        setApproved(data)
+        const result = await res.json()
+        setApproved(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching approved applications:', error)

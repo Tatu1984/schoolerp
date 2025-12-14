@@ -16,8 +16,8 @@ export default function FinanceReportsPage() {
     try {
       const res = await fetch(`/api/finance/reports?range=${dateRange}`)
       if (res.ok) {
-        const data = await res.json()
-        setReports(data)
+        const result = await res.json()
+        setReports(result.data || {})
       }
     } catch (error) {
       console.error('Error fetching reports:', error)

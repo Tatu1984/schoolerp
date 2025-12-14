@@ -32,13 +32,13 @@ export default function OnlineClassesPage() {
       ])
 
       if (classesRes.ok) {
-        const data = await classesRes.json()
-        setClasses(data)
+        const result = await classesRes.json()
+        setClasses(result.data || [])
       }
 
       if (coursesRes.ok) {
-        const data = await coursesRes.json()
-        setCourses(data)
+        const result = await coursesRes.json()
+        setCourses(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching data:', error)

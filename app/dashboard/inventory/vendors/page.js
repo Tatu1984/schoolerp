@@ -27,8 +27,8 @@ export default function VendorsPage() {
     try {
       const res = await fetch('/api/inventory/vendors')
       if (res.ok) {
-        const data = await res.json()
-        setVendors(data)
+        const result = await res.json()
+        setVendors(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching vendors:', error)

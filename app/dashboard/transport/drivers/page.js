@@ -27,8 +27,8 @@ export default function DriversPage() {
     try {
       const res = await fetch('/api/transport/drivers')
       if (res.ok) {
-        const data = await res.json()
-        setDrivers(data)
+        const result = await res.json()
+        setDrivers(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching drivers:', error)

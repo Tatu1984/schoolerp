@@ -33,13 +33,13 @@ export default function ProductsPage() {
         fetch('/api/schools')
       ])
 
-      const [productsData, schoolsData] = await Promise.all([
+      const [productsResult, schoolsResult] = await Promise.all([
         productsRes.json(),
         schoolsRes.json()
       ])
 
-      setProducts(productsData)
-      setSchools(schoolsData)
+      setProducts(productsResult.data || [])
+      setSchools(schoolsResult.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {

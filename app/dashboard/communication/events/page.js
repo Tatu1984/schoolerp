@@ -25,8 +25,8 @@ export default function EventsPage() {
     try {
       const res = await fetch('/api/communication/events')
       if (res.ok) {
-        const data = await res.json()
-        setEvents(data)
+        const result = await res.json()
+        setEvents(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching events:', error)

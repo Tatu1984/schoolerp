@@ -29,8 +29,8 @@ export default function InterviewsPage() {
     try {
       const res = await fetch('/api/admissions/interviews')
       if (res.ok) {
-        const data = await res.json()
-        setInterviews(data)
+        const result = await res.json()
+        setInterviews(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching interviews:', error)

@@ -22,8 +22,8 @@ export default function MessagesPage() {
     try {
       const res = await fetch(`/api/communication/messages?type=${activeTab}`)
       if (res.ok) {
-        const data = await res.json()
-        setMessages(data)
+        const result = await res.json()
+        setMessages(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching messages:', error)

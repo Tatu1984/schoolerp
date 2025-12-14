@@ -105,7 +105,7 @@ const modulePermissions: Record<string, UserRole[]> = {
   sections: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'VICE_PRINCIPAL', 'HEAD_TEACHER'],
   subjects: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'VICE_PRINCIPAL', 'HEAD_TEACHER'],
   roles: ['SUPER_ADMIN', 'SCHOOL_ADMIN'],
-  schools: ['SUPER_ADMIN'],
+  schools: ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL'],
   branches: ['SUPER_ADMIN', 'SCHOOL_ADMIN'],
   'academic-years': ['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL'],
 }

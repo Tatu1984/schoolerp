@@ -25,8 +25,8 @@ export default function LeaveManagementPage() {
     try {
       const res = await fetch('/api/staff/leave')
       if (res.ok) {
-        const data = await res.json()
-        setLeaves(data)
+        const result = await res.json()
+        setLeaves(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching leaves:', error)

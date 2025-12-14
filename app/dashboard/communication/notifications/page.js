@@ -22,8 +22,8 @@ export default function NotificationsPage() {
     try {
       const res = await fetch('/api/communication/notifications')
       if (res.ok) {
-        const data = await res.json()
-        setNotifications(data)
+        const result = await res.json()
+        setNotifications(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching notifications:', error)

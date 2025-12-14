@@ -27,8 +27,8 @@ export default function BranchesPage() {
     try {
       const res = await fetch('/api/branches')
       if (res.ok) {
-        const data = await res.json()
-        setBranches(data)
+        const result = await res.json()
+        setBranches(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching branches:', error)

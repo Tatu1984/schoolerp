@@ -17,8 +17,8 @@ export default function ReportCardsPage() {
     try {
       const res = await fetch('/api/lms/report-cards')
       if (res.ok) {
-        const data = await res.json()
-        setReportCards(data)
+        const result = await res.json()
+        setReportCards(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching report cards:', error)

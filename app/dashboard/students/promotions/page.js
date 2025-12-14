@@ -31,8 +31,8 @@ export default function StudentPromotionsPage() {
   const fetchAcademicYears = async () => {
     try {
       const res = await fetch('/api/academic-years')
-      const data = await res.json()
-      setAcademicYears(data)
+      const result = await res.json()
+      setAcademicYears(result.data || [])
     } catch (error) {
       console.error('Error fetching academic years:', error)
     }
@@ -41,8 +41,8 @@ export default function StudentPromotionsPage() {
   const fetchClasses = async () => {
     try {
       const res = await fetch('/api/classes')
-      const data = await res.json()
-      setClasses(data)
+      const result = await res.json()
+      setClasses(result.data || [])
     } catch (error) {
       console.error('Error fetching classes:', error)
     }
@@ -51,8 +51,8 @@ export default function StudentPromotionsPage() {
   const fetchSections = async () => {
     try {
       const res = await fetch('/api/sections')
-      const data = await res.json()
-      setSections(data)
+      const result = await res.json()
+      setSections(result.data || [])
     } catch (error) {
       console.error('Error fetching sections:', error)
     }
@@ -72,8 +72,8 @@ export default function StudentPromotionsPage() {
       }
 
       const res = await fetch(url)
-      const data = await res.json()
-      setStudents(data)
+      const result = await res.json()
+      setStudents(result.data || [])
     } catch (error) {
       console.error('Error fetching students:', error)
     } finally {

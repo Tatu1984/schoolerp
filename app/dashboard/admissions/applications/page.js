@@ -17,8 +17,8 @@ export default function ApplicationsPage() {
     try {
       const res = await fetch('/api/admissions/applications')
       if (res.ok) {
-        const data = await res.json()
-        setApplications(data)
+        const result = await res.json()
+        setApplications(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching applications:', error)

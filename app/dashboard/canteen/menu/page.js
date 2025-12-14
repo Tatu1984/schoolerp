@@ -33,13 +33,13 @@ export default function MenuPage() {
         fetch('/api/schools')
       ])
 
-      const [menuData, schoolsData] = await Promise.all([
+      const [menuResult, schoolsResult] = await Promise.all([
         menuRes.json(),
         schoolsRes.json()
       ])
 
-      setMenuItems(menuData)
-      setSchools(schoolsData)
+      setMenuItems(menuResult.data || [])
+      setSchools(schoolsResult.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {

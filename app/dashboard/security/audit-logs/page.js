@@ -17,8 +17,8 @@ export default function AuditLogsPage() {
     setLoading(true)
     try {
       const res = await fetch('/api/security/audit-logs')
-      const data = await res.json()
-      setLogs(data)
+      const result = await res.json()
+      setLogs(result.data || [])
     } catch (error) {
       console.error('Error fetching logs:', error)
       // Mock data for demonstration

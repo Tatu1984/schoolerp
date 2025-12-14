@@ -31,13 +31,13 @@ export default function AssignmentsPage() {
       ])
 
       if (assignmentsRes.ok) {
-        const data = await assignmentsRes.json()
-        setAssignments(data)
+        const result = await assignmentsRes.json()
+        setAssignments(result.data || [])
       }
 
       if (coursesRes.ok) {
-        const data = await coursesRes.json()
-        setCourses(data)
+        const result = await coursesRes.json()
+        setCourses(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching data:', error)

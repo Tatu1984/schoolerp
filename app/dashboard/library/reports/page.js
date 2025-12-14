@@ -16,8 +16,8 @@ export default function LibraryReportsPage() {
     try {
       const res = await fetch(`/api/library/reports?range=${dateRange}`)
       if (res.ok) {
-        const data = await res.json()
-        setReports(data)
+        const result = await res.json()
+        setReports(result.data || null)
       }
     } catch (error) {
       console.error('Error fetching reports:', error)

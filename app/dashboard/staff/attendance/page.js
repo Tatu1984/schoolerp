@@ -21,13 +21,13 @@ export default function StaffAttendancePage() {
         fetch(`/api/staff/attendance?date=${selectedDate}`)
       ])
 
-      const [staffData, attendanceData] = await Promise.all([
+      const [staffResult, attendanceResult] = await Promise.all([
         staffRes.json(),
         attendanceRes.json()
       ])
 
-      setStaff(staffData)
-      setAttendance(attendanceData)
+      setStaff(staffResult.data || [])
+      setAttendance(attendanceResult.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {

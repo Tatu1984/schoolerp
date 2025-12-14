@@ -22,8 +22,14 @@ export default function CanteenReportsPage() {
     try {
       const res = await fetch(`/api/canteen/reports?range=${dateRange}`)
       if (res.ok) {
-        const data = await res.json()
-        setReports(data)
+        const result = await res.json()
+        setReports(result.data || {
+          totalRevenue: 0,
+          totalOrders: 0,
+          popularItems: [],
+          dailySales: [],
+          monthlySales: 0
+        })
       }
     } catch (error) {
       console.error('Error fetching reports:', error)

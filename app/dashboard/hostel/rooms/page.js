@@ -27,8 +27,8 @@ export default function RoomsPage() {
     try {
       const res = await fetch('/api/hostel/rooms')
       if (res.ok) {
-        const data = await res.json()
-        setRooms(data)
+        const result = await res.json()
+        setRooms(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching rooms:', error)

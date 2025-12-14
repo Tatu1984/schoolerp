@@ -17,8 +17,8 @@ export default function MarketplaceInventoryPage() {
     try {
       const res = await fetch('/api/marketplace/inventory')
       if (res.ok) {
-        const data = await res.json()
-        setInventory(data)
+        const result = await res.json()
+        setInventory(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching inventory:', error)

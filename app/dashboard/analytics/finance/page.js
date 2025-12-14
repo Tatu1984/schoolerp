@@ -24,8 +24,16 @@ export default function FinancialAnalyticsPage() {
     try {
       const res = await fetch(`/api/analytics/finance?period=${period}`)
       if (res.ok) {
-        const data = await res.json()
-        setAnalytics(data)
+        const result = await res.json()
+        setAnalytics(result.data || {
+          totalRevenue: 0,
+          totalExpenses: 0,
+          netProfit: 0,
+          feeCollectionRate: 0,
+          pendingFees: 0,
+          monthlyRevenue: [],
+          expenseBreakdown: []
+        })
       }
     } catch (error) {
       console.error('Error fetching analytics:', error)

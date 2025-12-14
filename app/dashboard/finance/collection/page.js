@@ -20,8 +20,8 @@ export default function FeeCollectionPage() {
     try {
       const res = await fetch('/api/finance/fee-due')
       if (res.ok) {
-        const data = await res.json()
-        setStudents(data)
+        const result = await res.json()
+        setStudents(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching students:', error)

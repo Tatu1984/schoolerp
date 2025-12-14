@@ -19,8 +19,12 @@ export default function CompliancePage() {
     try {
       const res = await fetch('/api/security/compliance')
       if (res.ok) {
-        const data = await res.json()
-        setCompliance(data)
+        const result = await res.json()
+        setCompliance(result.data || {
+          gdprCompliance: [],
+          dataRetentionPolicies: [],
+          complianceScore: 0
+        })
       }
     } catch (error) {
       console.error('Error fetching compliance:', error)

@@ -30,8 +30,8 @@ export default function InquiriesPage() {
     try {
       const res = await fetch('/api/admissions?status=INQUIRY')
       if (res.ok) {
-        const data = await res.json()
-        setInquiries(data)
+        const result = await res.json()
+        setInquiries(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching inquiries:', error)

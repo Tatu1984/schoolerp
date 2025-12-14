@@ -17,8 +17,8 @@ export default function StockPage() {
     try {
       const res = await fetch('/api/inventory/stock')
       if (res.ok) {
-        const data = await res.json()
-        setStock(data)
+        const result = await res.json()
+        setStock(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching stock:', error)

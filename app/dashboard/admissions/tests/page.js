@@ -29,8 +29,8 @@ export default function EntranceTestsPage() {
     try {
       const res = await fetch('/api/admissions/tests')
       if (res.ok) {
-        const data = await res.json()
-        setTests(data)
+        const result = await res.json()
+        setTests(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching tests:', error)

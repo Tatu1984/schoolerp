@@ -24,8 +24,17 @@ export default function AnalyticsOverviewPage() {
     setLoading(true)
     try {
       const res = await fetch('/api/analytics/overview')
-      const data = await res.json()
-      setStats(data)
+      const result = await res.json()
+      setStats(result.data || {
+        totalStudents: 0,
+        totalStaff: 0,
+        totalRevenue: 0,
+        totalCourses: 0,
+        studentGrowth: 0,
+        revenueGrowth: 0,
+        attendanceRate: 0,
+        feeCollectionRate: 0
+      })
     } catch (error) {
       console.error('Error fetching analytics:', error)
       // Mock data for demonstration

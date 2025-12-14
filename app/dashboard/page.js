@@ -1,8 +1,9 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Users, GraduationCap, BookOpen, DollarSign, TrendingUp, TrendingDown } from 'lucide-react'
 
-const stats = [
+const initialStats = [
   {
     name: 'Total Students',
     value: '2,543',
@@ -37,7 +38,7 @@ const stats = [
   },
 ]
 
-const recentActivities = [
+const initialActivities = [
   { action: 'New student admission', name: 'Rahul Kumar', time: '2 mins ago' },
   { action: 'Fee payment received', name: 'Priya Sharma', time: '15 mins ago' },
   { action: 'Library book issued', name: 'Amit Patel', time: '1 hour ago' },
@@ -45,7 +46,7 @@ const recentActivities = [
   { action: 'Transport route updated', name: 'Route #5', time: '3 hours ago' },
 ]
 
-const upcomingEvents = [
+const initialEvents = [
   { title: 'Parent-Teacher Meeting', date: 'Dec 10, 2025', time: '10:00 AM' },
   { title: 'Annual Sports Day', date: 'Dec 15, 2025', time: '8:00 AM' },
   { title: 'Mid-term Exams', date: 'Dec 20, 2025', time: '9:00 AM' },
@@ -53,6 +54,43 @@ const upcomingEvents = [
 ]
 
 export default function DashboardPage() {
+  const [stats, setStats] = useState(initialStats)
+  const [recentActivities, setRecentActivities] = useState(initialActivities)
+  const [upcomingEvents, setUpcomingEvents] = useState(initialEvents)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchDashboardData()
+  }, [])
+
+  const fetchDashboardData = async () => {
+    try {
+      // Fetch stats
+      const statsRes = await fetch('/api/dashboard/stats')
+      if (statsRes.ok) {
+        const result = await statsRes.json()
+        setStats(result.data || initialStats)
+      }
+
+      // Fetch recent activities
+      const activitiesRes = await fetch('/api/dashboard/activities')
+      if (activitiesRes.ok) {
+        const result = await activitiesRes.json()
+        setRecentActivities(result.data || initialActivities)
+      }
+
+      // Fetch upcoming events
+      const eventsRes = await fetch('/api/dashboard/events')
+      if (eventsRes.ok) {
+        const result = await eventsRes.json()
+        setUpcomingEvents(result.data || initialEvents)
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
   return (
     <div className="space-y-6">
       <div>

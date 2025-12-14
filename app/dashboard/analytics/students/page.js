@@ -22,8 +22,15 @@ export default function StudentAnalyticsPage() {
     try {
       const res = await fetch('/api/analytics/students')
       if (res.ok) {
-        const data = await res.json()
-        setAnalytics(data)
+        const result = await res.json()
+        setAnalytics(result.data || {
+          totalStudents: 0,
+          averageAttendance: 0,
+          topPerformers: [],
+          lowPerformers: [],
+          classWisePerformance: [],
+          behaviorMetrics: {}
+        })
       }
     } catch (error) {
       console.error('Error fetching analytics:', error)

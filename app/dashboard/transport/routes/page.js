@@ -23,8 +23,8 @@ export default function RoutesPage() {
     try {
       const res = await fetch('/api/routes')
       if (res.ok) {
-        const data = await res.json()
-        setRoutes(data)
+        const result = await res.json()
+        setRoutes(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching routes:', error)

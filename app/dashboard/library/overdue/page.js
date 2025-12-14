@@ -17,8 +17,8 @@ export default function OverduePage() {
     try {
       const res = await fetch('/api/library/overdue')
       if (res.ok) {
-        const data = await res.json()
-        setOverdueBooks(data)
+        const result = await res.json()
+        setOverdueBooks(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching overdue books:', error)

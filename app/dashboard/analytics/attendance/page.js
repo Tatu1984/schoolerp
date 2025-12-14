@@ -22,8 +22,15 @@ export default function AttendanceAnalyticsPage() {
     try {
       const res = await fetch('/api/analytics/attendance')
       if (res.ok) {
-        const data = await res.json()
-        setAnalytics(data)
+        const result = await res.json()
+        setAnalytics(result.data || {
+          overallAttendance: 0,
+          presentToday: 0,
+          absentToday: 0,
+          defaulters: [],
+          classWiseAttendance: [],
+          attendanceTrend: []
+        })
       }
     } catch (error) {
       console.error('Error fetching analytics:', error)

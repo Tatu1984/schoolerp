@@ -16,8 +16,8 @@ export default function StaffPage() {
     try {
       const res = await fetch('/api/staff')
       if (res.ok) {
-        const data = await res.json()
-        setStaff(data)
+        const result = await res.json()
+        setStaff(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching staff:', error)

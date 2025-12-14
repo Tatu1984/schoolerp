@@ -27,8 +27,8 @@ export default function ExpensesPage() {
     try {
       const res = await fetch('/api/finance/expenses')
       if (res.ok) {
-        const data = await res.json()
-        setExpenses(data)
+        const result = await res.json()
+        setExpenses(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching expenses:', error)

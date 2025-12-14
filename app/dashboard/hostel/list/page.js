@@ -32,13 +32,13 @@ export default function HostelsPage() {
         fetch('/api/schools')
       ])
 
-      const [hostelsData, schoolsData] = await Promise.all([
+      const [hostelsResult, schoolsResult] = await Promise.all([
         hostelsRes.json(),
         schoolsRes.json()
       ])
 
-      setHostels(hostelsData)
-      setSchools(schoolsData)
+      setHostels(hostelsResult.data || [])
+      setSchools(schoolsResult.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {

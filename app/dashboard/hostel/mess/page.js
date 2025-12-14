@@ -26,8 +26,8 @@ export default function MessPage() {
     try {
       const res = await fetch('/api/hostel/mess')
       if (res.ok) {
-        const data = await res.json()
-        setPlans(data)
+        const result = await res.json()
+        setPlans(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching mess plans:', error)

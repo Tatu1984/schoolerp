@@ -21,8 +21,8 @@ export default function SmartWalletPage() {
     try {
       const res = await fetch('/api/canteen/wallet')
       if (res.ok) {
-        const data = await res.json()
-        setWallets(data)
+        const result = await res.json()
+        setWallets(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching wallets:', error)
@@ -35,8 +35,8 @@ export default function SmartWalletPage() {
     try {
       const res = await fetch('/api/canteen/wallet/transactions')
       if (res.ok) {
-        const data = await res.json()
-        setTransactions(data)
+        const result = await res.json()
+        setTransactions(result.data || [])
       }
     } catch (error) {
       console.error('Error fetching transactions:', error)
