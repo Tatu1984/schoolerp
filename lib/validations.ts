@@ -336,13 +336,13 @@ export const vehicleSchema = z.object({
   isActive: z.boolean().default(true),
 })
 
-// FIXED: studentTransportSchema - added startDate and endDate
+// FIXED: studentTransportSchema - startDate is required in Prisma
 export const studentTransportSchema = z.object({
   studentId: requiredString,
   routeId: requiredString,
   stopId: requiredString,
-  startDate: dateString.optional(), // FIXED: Added
-  endDate: dateString.optional(), // FIXED: Added
+  startDate: dateString, // FIXED: Required in Prisma
+  endDate: dateString.optional(),
   isActive: z.boolean().default(true),
 })
 
@@ -672,14 +672,15 @@ export const auditLogSchema = z.object({
   userAgent: optionalString,
 })
 
-// FIXED: dataBackupSchema - changed filename to fileName, size to fileSize
+// FIXED: dataBackupSchema - aligned with Prisma model (no schoolId, added location, startedAt)
 export const dataBackupSchema = z.object({
-  schoolId: requiredString,
-  fileName: requiredString.max(255), // FIXED: Changed from filename to fileName
-  fileSize: nonNegativeNumber.int(), // FIXED: Changed from size to fileSize
+  fileName: requiredString.max(255),
+  fileSize: z.number().optional(), // Float in Prisma, optional
+  location: requiredString.max(500), // FIXED: Added required location field
   status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED']).default('COMPLETED'),
-  backupType: z.enum(['FULL', 'INCREMENTAL', 'DIFFERENTIAL']).default('FULL'), // FIXED: Changed from type to backupType
-  notes: optionalString,
+  backupType: requiredString.max(50), // FIXED: String in Prisma, not enum
+  startedAt: dateString, // FIXED: Added required startedAt field
+  completedAt: dateString.optional(), // FIXED: Added optional completedAt field
 })
 
 // FIXED: complianceRecordSchema - field names to match Prisma

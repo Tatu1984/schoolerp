@@ -5,6 +5,8 @@ import { Plus, Search, Phone, Mail, Calendar, Eye, Edit, CheckCircle } from 'luc
 
 export default function InquiriesPage() {
   const [inquiries, setInquiries] = useState([])
+  const [schools, setSchools] = useState([])
+  const [academicYears, setAcademicYears] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [formData, setFormData] = useState({
@@ -18,13 +20,52 @@ export default function InquiriesPage() {
     address: '',
     appliedClass: '',
     notes: '',
-    schoolId: 'temp-school-id',
+    schoolId: '',
     academicYearId: '',
   })
 
   useEffect(() => {
-    fetchInquiries()
+    fetchData()
   }, [])
+
+  const fetchData = async () => {
+    try {
+      const [inquiriesRes, schoolsRes, yearsRes] = await Promise.all([
+        fetch('/api/admissions?status=INQUIRY'),
+        fetch('/api/schools'),
+        fetch('/api/academic-years')
+      ])
+
+      if (inquiriesRes.ok) {
+        const result = await inquiriesRes.json()
+        setInquiries(result.data || [])
+      }
+
+      if (schoolsRes.ok) {
+        const schoolsResult = await schoolsRes.json()
+        const schoolsData = schoolsResult.data || []
+        setSchools(schoolsData)
+        if (schoolsData.length > 0 && !formData.schoolId) {
+          setFormData(prev => ({ ...prev, schoolId: schoolsData[0].id }))
+        }
+      }
+
+      if (yearsRes.ok) {
+        const yearsResult = await yearsRes.json()
+        const yearsData = yearsResult.data || []
+        setAcademicYears(yearsData)
+        const currentYear = yearsData.find(y => y.isCurrent)
+        if (currentYear && !formData.academicYearId) {
+          setFormData(prev => ({ ...prev, academicYearId: currentYear.id }))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      alert('Error loading data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const fetchInquiries = async () => {
     try {
@@ -35,8 +76,6 @@ export default function InquiriesPage() {
       }
     } catch (error) {
       console.error('Error fetching inquiries:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -94,6 +133,7 @@ export default function InquiriesPage() {
   }
 
   const resetForm = () => {
+    const currentYear = academicYears.find(y => y.isCurrent)
     setFormData({
       firstName: '',
       lastName: '',
@@ -105,8 +145,8 @@ export default function InquiriesPage() {
       address: '',
       appliedClass: '',
       notes: '',
-      schoolId: 'temp-school-id',
-      academicYearId: '',
+      schoolId: schools[0]?.id || '',
+      academicYearId: currentYear?.id || '',
     })
   }
 

@@ -43,7 +43,7 @@ export const GET = withApiHandler(
 
     return successResponse(section)
   },
-  { module: 'sections' }
+  { requireAuth: true, module: 'sections' }
 )
 
 // PUT /api/sections/[id] - Update a section
@@ -94,7 +94,7 @@ export const PUT = withApiHandler(
 
     return successResponse(section)
   },
-  { module: 'sections' }
+  { requireAuth: true, module: 'sections' }
 )
 
 // DELETE /api/sections/[id] - Delete a section
@@ -118,5 +118,5 @@ export const DELETE = withApiHandler(
 
     return successResponse({ message: 'Section deleted successfully' })
   },
-  { module: 'sections' }
+  { requireAuth: true, module: 'sections' }
 )

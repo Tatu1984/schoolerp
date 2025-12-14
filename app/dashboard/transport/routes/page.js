@@ -5,6 +5,7 @@ import { Plus, Edit, Trash2, MapPin, Navigation } from 'lucide-react'
 
 export default function RoutesPage() {
   const [routes, setRoutes] = useState([])
+  const [schools, setSchools] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingRoute, setEditingRoute] = useState(null)
@@ -12,12 +13,40 @@ export default function RoutesPage() {
     name: '',
     code: '',
     description: '',
-    schoolId: 'temp-school-id',
+    schoolId: '',
   })
 
   useEffect(() => {
-    fetchRoutes()
+    fetchData()
   }, [])
+
+  const fetchData = async () => {
+    try {
+      const [routesRes, schoolsRes] = await Promise.all([
+        fetch('/api/routes'),
+        fetch('/api/schools')
+      ])
+
+      if (routesRes.ok) {
+        const result = await routesRes.json()
+        setRoutes(result.data || [])
+      }
+
+      if (schoolsRes.ok) {
+        const schoolsResult = await schoolsRes.json()
+        const schoolsData = schoolsResult.data || []
+        setSchools(schoolsData)
+        if (schoolsData.length > 0 && !formData.schoolId) {
+          setFormData(prev => ({ ...prev, schoolId: schoolsData[0].id }))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+      alert('Error loading data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const fetchRoutes = async () => {
     try {
@@ -28,8 +57,6 @@ export default function RoutesPage() {
       }
     } catch (error) {
       console.error('Error fetching routes:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -92,7 +119,7 @@ export default function RoutesPage() {
       name: '',
       code: '',
       description: '',
-      schoolId: 'temp-school-id',
+      schoolId: schools[0]?.id || '',
     })
     setEditingRoute(null)
   }

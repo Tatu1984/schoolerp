@@ -23,7 +23,7 @@ export const GET = withApiHandler(
 
     return successResponse(years)
   },
-  { module: 'academic-years' }
+  { requireAuth: true, module: 'academic-years' }
 )
 
 export const POST = withApiHandler(
@@ -61,5 +61,5 @@ export const POST = withApiHandler(
 
     return successResponse(year, 201)
   },
-  { module: 'academic-years' }
+  { requireAuth: true, module: 'academic-years' }
 )
