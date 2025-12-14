@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Save } from 'lucide-react'
 
 export default function AddStaffPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [schools, setSchools] = useState([])
   const [formData, setFormData] = useState({
     schoolId: '',
     employeeId: '',
@@ -16,42 +17,84 @@ export default function AddStaffPage() {
     phone: '',
     dateOfBirth: '',
     gender: 'MALE',
+    bloodGroup: '',
     address: '',
     city: '',
     state: '',
-    zipCode: '',
-    country: 'India',
-    department: 'TEACHING',
+    pincode: '',
+    staffType: 'TEACHING',
+    department: '',
     designation: '',
-    dateOfJoining: '',
-    employmentType: 'FULL_TIME',
-    salary: '',
-    qualifications: '',
+    joiningDate: '',
+    qualification: '',
     experience: '',
-    emergencyContactName: '',
-    emergencyContactPhone: '',
-    bloodGroup: '',
-    maritalStatus: 'SINGLE'
+    salary: '',
   })
+
+  useEffect(() => {
+    fetchSchools()
+  }, [])
+
+  const fetchSchools = async () => {
+    try {
+      const res = await fetch('/api/schools')
+      if (res.ok) {
+        const result = await res.json()
+        const schoolsData = result.data || []
+        setSchools(schoolsData)
+        if (schoolsData.length > 0 && !formData.schoolId) {
+          setFormData(prev => ({ ...prev, schoolId: schoolsData[0].id }))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching schools:', error)
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
 
     try {
+      const payload = {
+        schoolId: formData.schoolId,
+        employeeId: formData.employeeId,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        dateOfBirth: formData.dateOfBirth,
+        gender: formData.gender,
+        bloodGroup: formData.bloodGroup || null,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pincode,
+        staffType: formData.staffType,
+        department: formData.department || null,
+        designation: formData.designation,
+        joiningDate: formData.joiningDate,
+        qualification: formData.qualification || null,
+        experience: formData.experience ? parseInt(formData.experience) : null,
+        salary: formData.salary ? parseFloat(formData.salary) : null,
+      }
+
       const res = await fetch('/api/staff', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          salary: parseFloat(formData.salary)
-        })
+        body: JSON.stringify(payload)
       })
 
+      const result = await res.json()
+
       if (res.ok) {
+        alert('Staff member added successfully!')
         router.push('/dashboard/staff')
       } else {
-        alert('Error adding staff member')
+        const errorMsg = result.error || result.details
+          ? JSON.stringify(result.details || result.error)
+          : 'Error adding staff member'
+        alert(errorMsg)
       }
     } catch (error) {
       console.error('Error adding staff:', error)
@@ -76,10 +119,27 @@ export default function AddStaffPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
-        {/* Personal Information */}
+        {/* School Selection */}
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">School Assignment</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                School *
+              </label>
+              <select
+                required
+                value={formData.schoolId}
+                onChange={(e) => setFormData({ ...formData, schoolId: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="">Select School</option>
+                {schools.map((school) => (
+                  <option key={school.id} value={school.id}>{school.name}</option>
+                ))}
+              </select>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Employee ID *
@@ -89,10 +149,17 @@ export default function AddStaffPage() {
                 required
                 value={formData.employeeId}
                 onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
+                placeholder="e.g., EMP001"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
+          </div>
+        </div>
 
+        {/* Personal Information */}
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 First Name *
@@ -177,27 +244,20 @@ export default function AddStaffPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Blood Group
               </label>
-              <input
-                type="text"
+              <select
                 value={formData.bloodGroup}
                 onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Marital Status
-              </label>
-              <select
-                value={formData.maritalStatus}
-                onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
-                <option value="SINGLE">Single</option>
-                <option value="MARRIED">Married</option>
-                <option value="DIVORCED">Divorced</option>
-                <option value="WIDOWED">Widowed</option>
+                <option value="">Select Blood Group</option>
+                <option value="A_POSITIVE">A+</option>
+                <option value="A_NEGATIVE">A-</option>
+                <option value="B_POSITIVE">B+</option>
+                <option value="B_NEGATIVE">B-</option>
+                <option value="AB_POSITIVE">AB+</option>
+                <option value="AB_NEGATIVE">AB-</option>
+                <option value="O_POSITIVE">O+</option>
+                <option value="O_NEGATIVE">O-</option>
               </select>
             </div>
           </div>
@@ -209,10 +269,9 @@ export default function AddStaffPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Address *
+                Address
               </label>
               <textarea
-                required
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 rows="2"
@@ -222,11 +281,10 @@ export default function AddStaffPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                City *
+                City
               </label>
               <input
                 type="text"
-                required
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -235,11 +293,10 @@ export default function AddStaffPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                State *
+                State
               </label>
               <input
                 type="text"
-                required
                 value={formData.state}
                 onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -248,26 +305,12 @@ export default function AddStaffPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                ZIP Code *
+                PIN Code
               </label>
               <input
                 type="text"
-                required
-                value={formData.zipCode}
-                onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Country *
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.country}
-                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                value={formData.pincode}
+                onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
@@ -280,21 +323,32 @@ export default function AddStaffPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Department *
+                Staff Type *
               </label>
               <select
-                value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                required
+                value={formData.staffType}
+                onChange={(e) => setFormData({ ...formData, staffType: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
                 <option value="TEACHING">Teaching</option>
-                <option value="ADMINISTRATION">Administration</option>
+                <option value="NON_TEACHING">Non-Teaching</option>
+                <option value="ADMINISTRATIVE">Administrative</option>
                 <option value="SUPPORT">Support</option>
-                <option value="MAINTENANCE">Maintenance</option>
-                <option value="IT">IT</option>
-                <option value="LIBRARY">Library</option>
-                <option value="SPORTS">Sports</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Department
+              </label>
+              <input
+                type="text"
+                value={formData.department}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                placeholder="e.g., Mathematics, Science"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
             </div>
 
             <div>
@@ -306,6 +360,7 @@ export default function AddStaffPage() {
                 required
                 value={formData.designation}
                 onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
+                placeholder="e.g., Teacher, Principal"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
@@ -317,36 +372,21 @@ export default function AddStaffPage() {
               <input
                 type="date"
                 required
-                value={formData.dateOfJoining}
-                onChange={(e) => setFormData({ ...formData, dateOfJoining: e.target.value })}
+                value={formData.joiningDate}
+                onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Employment Type *
-              </label>
-              <select
-                value={formData.employmentType}
-                onChange={(e) => setFormData({ ...formData, employmentType: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              >
-                <option value="FULL_TIME">Full Time</option>
-                <option value="PART_TIME">Part Time</option>
-                <option value="CONTRACT">Contract</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Salary *
+                Qualification
               </label>
               <input
-                type="number"
-                required
-                value={formData.salary}
-                onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
+                type="text"
+                value={formData.qualification}
+                onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
+                placeholder="e.g., M.Sc, B.Ed"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
@@ -356,51 +396,23 @@ export default function AddStaffPage() {
                 Experience (years)
               </label>
               <input
-                type="text"
+                type="number"
+                min="0"
                 value={formData.experience}
                 onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
 
-            <div className="md:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Qualifications
-              </label>
-              <textarea
-                value={formData.qualifications}
-                onChange={(e) => setFormData({ ...formData, qualifications: e.target.value })}
-                rows="2"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Emergency Contact */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Emergency Contact</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Emergency Contact Name
+                Salary
               </label>
               <input
-                type="text"
-                value={formData.emergencyContactName}
-                onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Emergency Contact Phone
-              </label>
-              <input
-                type="tel"
-                value={formData.emergencyContactPhone}
-                onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })}
+                type="number"
+                min="0"
+                value={formData.salary}
+                onChange={(e) => setFormData({ ...formData, salary: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
