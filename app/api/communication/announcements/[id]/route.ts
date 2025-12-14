@@ -67,11 +67,14 @@ export const PUT = withApiHandler(
     }
 
     const data = validation.data!
-    const { attachments, publishedAt, ...restData } = data
+    const { attachments, publishedAt, priority, targetRole, targetClass, ...restData } = data
 
     const updateData: Prisma.AnnouncementUpdateInput = {
       ...restData,
       ...(publishedAt && { publishedAt: new Date(publishedAt) }),
+      ...(priority !== undefined && priority !== null && { priority }),
+      ...(targetRole !== undefined && targetRole !== null && { targetRole }),
+      ...(targetClass !== undefined && targetClass !== null && { targetClass }),
     }
 
     if (attachments !== undefined) {

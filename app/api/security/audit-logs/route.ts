@@ -3,7 +3,6 @@ import prisma from '@/lib/prisma'
 import {
   withApiHandler,
   getSchoolFilter,
-  getPaginationParams,
   successResponse,
   hasMinimumRole,
   errorResponse,
@@ -22,12 +21,17 @@ export const GET = withApiHandler(
     const userId = searchParams.get('userId')
     const limit = parseInt(searchParams.get('limit') || '100')
 
-    // Apply school filter
+    // AuditLog doesn't have schoolId - filter by users in the school instead
     const schoolFilter = getSchoolFilter(session)
 
-    const where: any = { ...schoolFilter }
+    const where: Record<string, unknown> = {}
     if (action) where.action = action
     if (userId) where.userId = userId
+
+    // Filter audit logs by users belonging to the school
+    if (schoolFilter.schoolId) {
+      where.user = { schoolId: schoolFilter.schoolId }
+    }
 
     const logs = await prisma.auditLog.findMany({
       where,
@@ -61,9 +65,7 @@ export const POST = withApiHandler(
     const body = await request.json()
     const { userId, action, entity, entityId, changes, ipAddress, userAgent } = body
 
-    // Apply school filter
-    const schoolFilter = getSchoolFilter(session)
-
+    // AuditLog model doesn't have schoolId - just create the log
     const log = await prisma.auditLog.create({
       data: {
         userId,
@@ -73,7 +75,6 @@ export const POST = withApiHandler(
         changes,
         ipAddress,
         userAgent,
-        ...schoolFilter
       }
     })
 

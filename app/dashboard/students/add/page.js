@@ -10,6 +10,7 @@ export default function AddStudentPage() {
   const [saving, setSaving] = useState(false)
   const [classes, setClasses] = useState([])
   const [sections, setSections] = useState([])
+  const [schools, setSchools] = useState([])
   const [formData, setFormData] = useState({
     admissionNumber: '',
     rollNumber: '',
@@ -32,7 +33,7 @@ export default function AddStudentPage() {
     classId: '',
     sectionId: '',
     admissionDate: new Date().toISOString().split('T')[0],
-    schoolId: 'temp-school-id',
+    schoolId: '',
   })
 
   const [guardian, setGuardian] = useState({
@@ -47,7 +48,7 @@ export default function AddStudentPage() {
   })
 
   useEffect(() => {
-    fetchClasses()
+    fetchInitialData()
   }, [])
 
   useEffect(() => {
@@ -56,15 +57,28 @@ export default function AddStudentPage() {
     }
   }, [formData.classId])
 
-  const fetchClasses = async () => {
+  const fetchInitialData = async () => {
     try {
-      const res = await fetch('/api/classes')
-      if (res.ok) {
-        const result = await res.json()
+      const [classesRes, schoolsRes] = await Promise.all([
+        fetch('/api/classes'),
+        fetch('/api/schools')
+      ])
+
+      if (classesRes.ok) {
+        const result = await classesRes.json()
         setClasses(result.data || [])
       }
+
+      if (schoolsRes.ok) {
+        const schoolsResult = await schoolsRes.json()
+        const schoolsData = schoolsResult.data || []
+        setSchools(schoolsData)
+        if (schoolsData.length > 0 && !formData.schoolId) {
+          setFormData(prev => ({ ...prev, schoolId: schoolsData[0].id }))
+        }
+      }
     } catch (error) {
-      console.error('Error fetching classes:', error)
+      console.error('Error fetching initial data:', error)
     }
   }
 

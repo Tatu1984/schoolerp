@@ -145,11 +145,9 @@ export const PUT = withApiHandler(
     const updateData: Record<string, unknown> = {}
 
     if (data.email) updateData.email = data.email.toLowerCase()
-    if (data.name) {
-      const nameParts = data.name.trim().split(' ')
-      updateData.firstName = nameParts[0]
-      updateData.lastName = nameParts.slice(1).join(' ') || nameParts[0]
-    }
+    if (data.firstName) updateData.firstName = data.firstName
+    if (data.lastName) updateData.lastName = data.lastName
+    if (data.phone !== undefined) updateData.phone = data.phone
     if (data.role) updateData.role = data.role
     if (data.isActive !== undefined) updateData.isActive = data.isActive
     if (data.password) updateData.password = await hash(data.password, 12)

@@ -33,6 +33,11 @@ export default function SubjectsPage() {
         fetch('/api/classes')
       ])
 
+      if (!subjectsRes.ok || !schoolsRes.ok || !classesRes.ok) {
+        alert('Error loading data. Please try again.')
+        return
+      }
+
       const [subjectsResult, schoolsResult, classesResult] = await Promise.all([
         subjectsRes.json(),
         schoolsRes.json(),
@@ -44,6 +49,7 @@ export default function SubjectsPage() {
       setClasses(classesResult.data || [])
     } catch (error) {
       console.error('Error fetching data:', error)
+      alert('Error loading data. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -67,9 +73,14 @@ export default function SubjectsPage() {
       if (res.ok) {
         fetchData()
         resetForm()
+        alert('Subject saved successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to save subject'}`)
       }
     } catch (error) {
       console.error('Error saving subject:', error)
+      alert('Error saving subject. Please try again.')
     }
   }
 
@@ -93,9 +104,14 @@ export default function SubjectsPage() {
       const res = await fetch(`/api/subjects/${id}`, { method: 'DELETE' })
       if (res.ok) {
         fetchData()
+        alert('Subject deleted successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to delete subject'}`)
       }
     } catch (error) {
       console.error('Error deleting subject:', error)
+      alert('Error deleting subject. Please try again.')
     }
   }
 

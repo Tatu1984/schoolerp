@@ -5,6 +5,7 @@ import { Plus, Edit, Trash2, MapPin } from 'lucide-react'
 
 export default function BranchesPage() {
   const [branches, setBranches] = useState([])
+  const [schools, setSchools] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingBranch, setEditingBranch] = useState(null)
@@ -16,12 +17,39 @@ export default function BranchesPage() {
     state: '',
     phone: '',
     email: '',
-    schoolId: 'temp-school-id', // This should come from session
+    schoolId: '',
   })
 
   useEffect(() => {
-    fetchBranches()
+    fetchData()
   }, [])
+
+  const fetchData = async () => {
+    try {
+      const [branchesRes, schoolsRes] = await Promise.all([
+        fetch('/api/branches'),
+        fetch('/api/schools')
+      ])
+
+      if (branchesRes.ok) {
+        const result = await branchesRes.json()
+        setBranches(result.data || [])
+      }
+
+      if (schoolsRes.ok) {
+        const schoolsResult = await schoolsRes.json()
+        const schoolsData = schoolsResult.data || []
+        setSchools(schoolsData)
+        if (schoolsData.length > 0 && !formData.schoolId) {
+          setFormData(prev => ({ ...prev, schoolId: schoolsData[0].id }))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const fetchBranches = async () => {
     try {
@@ -32,8 +60,6 @@ export default function BranchesPage() {
       }
     } catch (error) {
       console.error('Error fetching branches:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -104,7 +130,7 @@ export default function BranchesPage() {
       state: '',
       phone: '',
       email: '',
-      schoolId: 'temp-school-id',
+      schoolId: schools[0]?.id || '',
     })
     setEditingBranch(null)
   }

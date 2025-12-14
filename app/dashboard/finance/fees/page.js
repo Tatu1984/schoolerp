@@ -5,6 +5,7 @@ import { Plus, Edit, Trash2, DollarSign } from 'lucide-react'
 
 export default function FeesPage() {
   const [fees, setFees] = useState([])
+  const [schools, setSchools] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingFee, setEditingFee] = useState(null)
@@ -14,12 +15,39 @@ export default function FeesPage() {
     amount: '',
     frequency: 'MONTHLY',
     description: '',
-    schoolId: 'temp-school-id',
+    schoolId: '',
   })
 
   useEffect(() => {
-    fetchFees()
+    fetchData()
   }, [])
+
+  const fetchData = async () => {
+    try {
+      const [feesRes, schoolsRes] = await Promise.all([
+        fetch('/api/fees'),
+        fetch('/api/schools')
+      ])
+
+      if (feesRes.ok) {
+        const result = await feesRes.json()
+        setFees(result.data || [])
+      }
+
+      if (schoolsRes.ok) {
+        const schoolsResult = await schoolsRes.json()
+        const schoolsData = schoolsResult.data || []
+        setSchools(schoolsData)
+        if (schoolsData.length > 0 && !formData.schoolId) {
+          setFormData(prev => ({ ...prev, schoolId: schoolsData[0].id }))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const fetchFees = async () => {
     try {
@@ -30,8 +58,6 @@ export default function FeesPage() {
       }
     } catch (error) {
       console.error('Error fetching fees:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -101,7 +127,7 @@ export default function FeesPage() {
       amount: '',
       frequency: 'MONTHLY',
       description: '',
-      schoolId: 'temp-school-id',
+      schoolId: schools[0]?.id || '',
     })
     setEditingFee(null)
   }

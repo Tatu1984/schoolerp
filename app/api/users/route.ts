@@ -132,17 +132,13 @@ export const POST = withApiHandler(
     // Hash password
     const hashedPassword = await hash(data.password, 12)
 
-    // Split name into first and last name
-    const nameParts = data.name.trim().split(' ')
-    const firstName = nameParts[0]
-    const lastName = nameParts.slice(1).join(' ') || nameParts[0]
-
     const user = await prisma.user.create({
       data: {
         email: data.email.toLowerCase(),
         password: hashedPassword,
-        firstName,
-        lastName,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
         role: data.role,
         schoolId,
         isActive: data.isActive ?? true,

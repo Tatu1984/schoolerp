@@ -27,7 +27,7 @@ export const GET = withApiHandler(
 
     return successResponse(reportCards)
   },
-  { module: 'lms' }
+  { requireAuth: true, module: 'lms' }
 )
 
 export const POST = withApiHandler(
@@ -68,5 +68,5 @@ export const POST = withApiHandler(
 
     return successResponse(reportCard, 201)
   },
-  { module: 'lms' }
+  { requireAuth: true, module: 'lms' }
 )

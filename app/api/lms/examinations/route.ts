@@ -31,7 +31,7 @@ export const GET = withApiHandler(
 
     return successResponse(exams)
   },
-  { module: 'lms' }
+  { requireAuth: true, module: 'lms' }
 )
 
 export const POST = withApiHandler(
@@ -71,5 +71,5 @@ export const POST = withApiHandler(
 
     return successResponse(exam, 201)
   },
-  { module: 'lms' }
+  { requireAuth: true, module: 'lms' }
 )

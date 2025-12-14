@@ -13,7 +13,7 @@ import { z } from 'zod'
 
 const rechargeSchema = z.object({
   amount: z.number().positive('Amount must be positive'),
-  paymentMode: z.enum(['CASH', 'CARD', 'BANK_TRANSFER', 'UPI', 'CHEQUE']).optional(),
+  paymentMode: z.enum(['CASH', 'CHEQUE', 'CARD', 'UPI', 'NET_BANKING', 'OTHER']).optional(),
   reference: z.string().optional(),
   description: z.string().optional(),
 })

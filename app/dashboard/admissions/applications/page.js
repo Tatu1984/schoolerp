@@ -19,9 +19,13 @@ export default function ApplicationsPage() {
       if (res.ok) {
         const result = await res.json()
         setApplications(result.data || [])
+      } else {
+        const error = await res.json()
+        alert(`Error loading applications: ${error.message || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Error fetching applications:', error)
+      alert('Error loading applications. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -37,9 +41,14 @@ export default function ApplicationsPage() {
 
       if (res.ok) {
         fetchApplications()
+        alert(`Application ${newStatus.toLowerCase().replace('_', ' ')} successfully!`)
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to update status'}`)
       }
     } catch (error) {
       console.error('Error updating status:', error)
+      alert('Error updating application status. Please try again.')
     }
   }
 

@@ -45,7 +45,7 @@ export const GET = withApiHandler(
 
     return successResponse(settings)
   },
-  { module: 'settings' }
+  { requireAuth: true, module: 'settings' }
 )
 
 // PUT /api/settings - Update settings
@@ -61,5 +61,5 @@ export const PUT = withApiHandler(
     // For now, just return success with the updated data
     return successResponse({ success: true, ...data })
   },
-  { module: 'settings' }
+  { requireAuth: true, module: 'settings' }
 )

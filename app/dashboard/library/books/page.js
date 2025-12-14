@@ -35,10 +35,16 @@ export default function BooksPage() {
     setLoading(true)
     try {
       const res = await fetch('/api/books')
+      if (!res.ok) {
+        const error = await res.json()
+        alert(`Error loading books: ${error.message || 'Unknown error'}`)
+        return
+      }
       const result = await res.json()
       setBooks(result.data || [])
     } catch (error) {
       console.error('Error fetching books:', error)
+      alert('Error loading books. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -65,9 +71,14 @@ export default function BooksPage() {
       if (res.ok) {
         fetchData()
         resetForm()
+        alert('Book saved successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to save book'}`)
       }
     } catch (error) {
       console.error('Error saving book:', error)
+      alert('Error saving book. Please try again.')
     }
   }
 
@@ -98,9 +109,14 @@ export default function BooksPage() {
       const res = await fetch(`/api/books/${id}`, { method: 'DELETE' })
       if (res.ok) {
         fetchData()
+        alert('Book deleted successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to delete book'}`)
       }
     } catch (error) {
       console.error('Error deleting book:', error)
+      alert('Error deleting book. Please try again.')
     }
   }
 

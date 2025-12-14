@@ -5,6 +5,7 @@ import { Plus, Edit, Trash2, Calendar, CheckCircle } from 'lucide-react'
 
 export default function AcademicYearsPage() {
   const [years, setYears] = useState([])
+  const [schools, setSchools] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingYear, setEditingYear] = useState(null)
@@ -13,12 +14,39 @@ export default function AcademicYearsPage() {
     startDate: '',
     endDate: '',
     isCurrent: false,
-    schoolId: 'temp-school-id',
+    schoolId: '',
   })
 
   useEffect(() => {
-    fetchYears()
+    fetchData()
   }, [])
+
+  const fetchData = async () => {
+    try {
+      const [yearsRes, schoolsRes] = await Promise.all([
+        fetch('/api/academic-years'),
+        fetch('/api/schools')
+      ])
+
+      if (yearsRes.ok) {
+        const result = await yearsRes.json()
+        setYears(result.data || [])
+      }
+
+      if (schoolsRes.ok) {
+        const schoolsResult = await schoolsRes.json()
+        const schoolsData = schoolsResult.data || []
+        setSchools(schoolsData)
+        if (schoolsData.length > 0 && !formData.schoolId) {
+          setFormData(prev => ({ ...prev, schoolId: schoolsData[0].id }))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const fetchYears = async () => {
     try {
@@ -29,8 +57,6 @@ export default function AcademicYearsPage() {
       }
     } catch (error) {
       console.error('Error fetching academic years:', error)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -108,7 +134,7 @@ export default function AcademicYearsPage() {
       startDate: '',
       endDate: '',
       isCurrent: false,
-      schoolId: 'temp-school-id',
+      schoolId: schools[0]?.id || '',
     })
     setEditingYear(null)
   }

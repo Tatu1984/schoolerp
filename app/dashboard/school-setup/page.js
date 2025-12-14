@@ -31,27 +31,33 @@ export default function SchoolSetupPage() {
     try {
       const res = await fetch('/api/schools')
       if (res.ok) {
-        const data = await res.json()
-        if (data.length > 0) {
-          setSchool(data[0])
+        const result = await res.json()
+        // Handle API response format: { success: true, data: [...] }
+        const schools = result.data || result || []
+        if (schools.length > 0) {
+          setSchool(schools[0])
           setFormData({
-            name: data[0].name || '',
-            code: data[0].code || '',
-            address: data[0].address || '',
-            city: data[0].city || '',
-            state: data[0].state || '',
-            country: data[0].country || 'India',
-            pincode: data[0].pincode || '',
-            phone: data[0].phone || '',
-            email: data[0].email || '',
-            website: data[0].website || '',
-            principalName: data[0].principalName || '',
-            established: data[0].established ? data[0].established.split('T')[0] : '',
+            name: schools[0].name || '',
+            code: schools[0].code || '',
+            address: schools[0].address || '',
+            city: schools[0].city || '',
+            state: schools[0].state || '',
+            country: schools[0].country || 'India',
+            pincode: schools[0].pincode || '',
+            phone: schools[0].phone || '',
+            email: schools[0].email || '',
+            website: schools[0].website || '',
+            principalName: schools[0].principalName || '',
+            established: schools[0].established ? schools[0].established.split('T')[0] : '',
           })
         }
+      } else {
+        const error = await res.json()
+        alert(`Error loading school data: ${error.message || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Error fetching school:', error)
+      alert('Error loading school data. Please try again.')
     } finally {
       setLoading(false)
     }

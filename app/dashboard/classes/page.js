@@ -6,6 +6,7 @@ import { Plus, Edit, Trash2, BookOpen } from 'lucide-react'
 export default function ClassesPage() {
   const [classes, setClasses] = useState([])
   const [academicYears, setAcademicYears] = useState([])
+  const [schools, setSchools] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingClass, setEditingClass] = useState(null)
@@ -15,7 +16,7 @@ export default function ClassesPage() {
     capacity: '',
     description: '',
     academicYearId: '',
-    schoolId: 'temp-school-id',
+    schoolId: '',
   })
 
   useEffect(() => {
@@ -24,9 +25,10 @@ export default function ClassesPage() {
 
   const fetchData = async () => {
     try {
-      const [classesRes, yearsRes] = await Promise.all([
+      const [classesRes, yearsRes, schoolsRes] = await Promise.all([
         fetch('/api/classes'),
-        fetch('/api/academic-years')
+        fetch('/api/academic-years'),
+        fetch('/api/schools')
       ])
 
       if (classesRes.ok) {
@@ -41,6 +43,15 @@ export default function ClassesPage() {
         const current = yearsData.find(y => y.isCurrent)
         if (current && !formData.academicYearId) {
           setFormData(prev => ({ ...prev, academicYearId: current.id }))
+        }
+      }
+
+      if (schoolsRes.ok) {
+        const schoolsResult = await schoolsRes.json()
+        const schoolsData = schoolsResult.data || []
+        setSchools(schoolsData)
+        if (schoolsData.length > 0 && !formData.schoolId) {
+          setFormData(prev => ({ ...prev, schoolId: schoolsData[0].id }))
         }
       }
     } catch (error) {
@@ -118,7 +129,7 @@ export default function ClassesPage() {
       capacity: '',
       description: '',
       academicYearId: current?.id || '',
-      schoolId: 'temp-school-id',
+      schoolId: schools[0]?.id || '',
     })
     setEditingClass(null)
   }
