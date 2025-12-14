@@ -20,7 +20,7 @@ export const GET = withApiHandler(
 
     return successResponse(assets)
   },
-  { module: 'inventory' }
+  { requireAuth: true, module: 'inventory' }
 )
 
 // POST /api/assets - Create a new asset
@@ -60,5 +60,5 @@ export const POST = withApiHandler(
 
     return successResponse(asset, 201)
   },
-  { module: 'inventory' }
+  { requireAuth: true, module: 'inventory' }
 )

@@ -35,7 +35,7 @@ export const GET = withApiHandler(
 
     return successResponse(subject)
   },
-  { module: 'subjects' }
+  { requireAuth: true, module: 'subjects' }
 )
 
 // PUT /api/subjects/[id] - Update a subject
@@ -82,7 +82,7 @@ export const PUT = withApiHandler(
 
     return successResponse(subject)
   },
-  { module: 'subjects' }
+  { requireAuth: true, module: 'subjects' }
 )
 
 // DELETE /api/subjects/[id] - Delete a subject
@@ -106,5 +106,5 @@ export const DELETE = withApiHandler(
 
     return successResponse({ message: 'Subject deleted successfully' })
   },
-  { module: 'subjects' }
+  { requireAuth: true, module: 'subjects' }
 )

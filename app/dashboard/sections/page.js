@@ -65,9 +65,14 @@ export default function SectionsPage() {
       if (res.ok) {
         fetchData()
         resetForm()
+        alert('Section saved successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to save section'}`)
       }
     } catch (error) {
       console.error('Error saving section:', error)
+      alert('Error saving section. Please try again.')
     }
   }
 
@@ -89,9 +94,14 @@ export default function SectionsPage() {
       const res = await fetch(`/api/sections/${id}`, { method: 'DELETE' })
       if (res.ok) {
         fetchData()
+        alert('Section deleted successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to delete section'}`)
       }
     } catch (error) {
       console.error('Error deleting section:', error)
+      alert('Error deleting section. Please try again.')
     }
   }
 

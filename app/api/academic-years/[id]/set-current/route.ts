@@ -40,5 +40,5 @@ export const POST = withApiHandler(
 
     return successResponse(updatedYear)
   },
-  { module: 'academic-years' }
+  { requireAuth: true, module: 'academic-years' }
 )

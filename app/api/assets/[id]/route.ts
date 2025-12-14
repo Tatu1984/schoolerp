@@ -26,7 +26,7 @@ export const GET = withApiHandler(
 
     return successResponse(asset)
   },
-  { module: 'inventory' }
+  { requireAuth: true, module: 'inventory' }
 )
 
 // PUT /api/assets/[id] - Update an asset
@@ -69,7 +69,7 @@ export const PUT = withApiHandler(
 
     return successResponse(asset)
   },
-  { module: 'inventory' }
+  { requireAuth: true, module: 'inventory' }
 )
 
 // DELETE /api/assets/[id] - Delete an asset
@@ -93,5 +93,5 @@ export const DELETE = withApiHandler(
 
     return successResponse({ success: true, message: 'Asset deleted successfully' })
   },
-  { module: 'inventory' }
+  { requireAuth: true, module: 'inventory' }
 )

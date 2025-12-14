@@ -62,13 +62,27 @@ export const POST = withApiHandler(
       return errorResponse('Access denied', 403)
     }
 
-    const body = await request.json()
+    let body
+    try {
+      body = await request.json()
+    } catch {
+      return errorResponse('Invalid JSON in request body', 400)
+    }
+
     const { userId, action, entity, entityId, changes, ipAddress, userAgent } = body
+
+    // Validate required fields
+    if (!action) {
+      return errorResponse('action is required', 400)
+    }
+    if (!entity) {
+      return errorResponse('entity is required', 400)
+    }
 
     // AuditLog model doesn't have schoolId - just create the log
     const log = await prisma.auditLog.create({
       data: {
-        userId,
+        userId: userId || session.user.id,
         action,
         entity,
         entityId,

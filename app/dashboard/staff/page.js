@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Plus, Search, Eye, Edit, Trash2, Users, UserCheck } from 'lucide-react'
+import Link from 'next/link'
 
 export default function StaffPage() {
   const [staff, setStaff] = useState([])
@@ -62,10 +63,13 @@ export default function StaffPage() {
           <h1 className="text-3xl font-bold text-gray-900">Staff Management</h1>
           <p className="text-gray-600 mt-1">Manage staff and employees</p>
         </div>
-        <button className="btn btn-primary flex items-center space-x-2">
+        <Link
+          href="/dashboard/staff/add"
+          className="btn btn-primary flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
           <Plus className="w-4 h-4" />
           <span>Add Staff</span>
-        </button>
+        </Link>
       </div>
 
       {/* Stats */}

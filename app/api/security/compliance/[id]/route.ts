@@ -47,7 +47,14 @@ export const PUT = withApiHandler(
     }
 
     const { id } = context.params
-    const body = await request.json()
+
+    let body
+    try {
+      body = await request.json()
+    } catch {
+      return errorResponse('Invalid JSON in request body', 400)
+    }
+
     const { complianceType, description, status, validFrom, validUntil, isActive } = body
 
     // Apply school filter

@@ -23,7 +23,7 @@ export const GET = withApiHandler(
 
     return successResponse(branches)
   },
-  { module: 'branches' }
+  { requireAuth: true, module: 'branches' }
 )
 
 export const POST = withApiHandler(
@@ -49,5 +49,5 @@ export const POST = withApiHandler(
 
     return successResponse(branch, 201)
   },
-  { module: 'branches' }
+  { requireAuth: true, module: 'branches' }
 )

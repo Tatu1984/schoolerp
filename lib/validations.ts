@@ -736,6 +736,48 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 })
 
+// ============ MISSING SCHEMAS ============
+// UserCustomRole schema
+export const userCustomRoleSchema = z.object({
+  userId: requiredString,
+  roleId: requiredString,
+})
+
+// StudentSibling schema
+export const studentSiblingSchema = z.object({
+  studentId: requiredString,
+  siblingId: requiredString,
+  relationship: optionalString,
+})
+
+// Library schema
+export const librarySchema = z.object({
+  name: requiredString.max(200),
+  schoolId: requiredString,
+  location: optionalString,
+  capacity: nonNegativeNumber.int().optional(),
+  isActive: z.boolean().default(true),
+})
+
+// TransportAlert schema
+export const transportAlertSchema = z.object({
+  vehicleId: requiredString,
+  alertType: requiredString.max(50),
+  message: requiredString.max(500),
+  severity: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).default('MEDIUM'),
+  isResolved: z.boolean().default(false),
+  resolvedAt: dateString.optional(),
+  resolvedBy: optionalString,
+})
+
+// StudentAttendance schema
+export const studentAttendanceSchema = z.object({
+  studentId: requiredString,
+  date: dateString,
+  status: z.enum(['PRESENT', 'ABSENT', 'LATE', 'HALF_DAY', 'EXCUSED']).default('PRESENT'),
+  remarks: optionalString,
+})
+
 // Type exports
 export type SchoolInput = z.infer<typeof schoolSchema>
 export type BranchInput = z.infer<typeof branchSchema>

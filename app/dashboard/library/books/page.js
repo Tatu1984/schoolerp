@@ -34,17 +34,32 @@ export default function BooksPage() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/books')
-      if (!res.ok) {
-        const error = await res.json()
+      const [booksRes, librariesRes] = await Promise.all([
+        fetch('/api/books'),
+        fetch('/api/libraries')
+      ])
+
+      if (!booksRes.ok) {
+        const error = await booksRes.json()
         alert(`Error loading books: ${error.message || 'Unknown error'}`)
         return
       }
-      const result = await res.json()
-      setBooks(result.data || [])
+
+      const [booksResult, librariesResult] = await Promise.all([
+        booksRes.json(),
+        librariesRes.ok ? librariesRes.json() : { data: [] }
+      ])
+
+      setBooks(booksResult.data || [])
+      setLibraries(librariesResult.data || [])
+
+      // Set default library if available and not already set
+      if (librariesResult.data?.length > 0 && !formData.libraryId) {
+        setFormData(prev => ({ ...prev, libraryId: librariesResult.data[0].id }))
+      }
     } catch (error) {
-      console.error('Error fetching books:', error)
-      alert('Error loading books. Please try again.')
+      console.error('Error fetching data:', error)
+      alert('Error loading data. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -186,6 +201,23 @@ export default function BooksPage() {
 
             <form onSubmit={handleSubmit} className="p-6">
               <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Library *
+                  </label>
+                  <select
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    value={formData.libraryId}
+                    onChange={(e) => setFormData({ ...formData, libraryId: e.target.value })}
+                  >
+                    <option value="">Select Library</option>
+                    {libraries.map(lib => (
+                      <option key={lib.id} value={lib.id}>{lib.name}</option>
+                    ))}
+                  </select>
+                </div>
+
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Title *

@@ -42,7 +42,7 @@ export const PUT = withApiHandler(
 
     return successResponse(branch)
   },
-  { module: 'branches' }
+  { requireAuth: true, module: 'branches' }
 )
 
 export const DELETE = withApiHandler(
@@ -67,5 +67,5 @@ export const DELETE = withApiHandler(
 
     return successResponse({ message: 'Branch deleted successfully' })
   },
-  { module: 'branches' }
+  { requireAuth: true, module: 'branches' }
 )

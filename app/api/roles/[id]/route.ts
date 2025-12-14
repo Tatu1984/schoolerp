@@ -42,7 +42,7 @@ export const GET = withApiHandler(
 
     return successResponse(role)
   },
-  { module: 'roles' }
+  { requireAuth: true, module: 'roles' }
 )
 
 // PUT /api/roles/[id] - Update a role
@@ -93,7 +93,7 @@ export const PUT = withApiHandler(
 
     return successResponse(role)
   },
-  { module: 'roles' }
+  { requireAuth: true, module: 'roles' }
 )
 
 // DELETE /api/roles/[id] - Delete a role
@@ -126,5 +126,5 @@ export const DELETE = withApiHandler(
 
     return successResponse({ message: 'Role deleted successfully' })
   },
-  { module: 'roles' }
+  { requireAuth: true, module: 'roles' }
 )

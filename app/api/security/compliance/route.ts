@@ -65,8 +65,19 @@ export const POST = withApiHandler(
       return errorResponse('Access denied', 403)
     }
 
-    const body = await request.json()
+    let body
+    try {
+      body = await request.json()
+    } catch {
+      return errorResponse('Invalid JSON in request body', 400)
+    }
+
     const { complianceType, description, status, validFrom, validUntil, isActive } = body
+
+    // Validate required fields
+    if (!complianceType) {
+      return errorResponse('complianceType is required', 400)
+    }
 
     const schoolId = session.user.schoolId
     if (!schoolId) {

@@ -31,7 +31,7 @@ export const GET = withApiHandler(
 
     return successResponse(course)
   },
-  { module: 'lms' }
+  { requireAuth: true, module: 'lms' }
 )
 
 export const PUT = withApiHandler(
@@ -74,7 +74,7 @@ export const PUT = withApiHandler(
 
     return successResponse(course)
   },
-  { module: 'lms' }
+  { requireAuth: true, module: 'lms' }
 )
 
 export const DELETE = withApiHandler(
@@ -99,5 +99,5 @@ export const DELETE = withApiHandler(
 
     return successResponse({ success: true })
   },
-  { module: 'lms' }
+  { requireAuth: true, module: 'lms' }
 )

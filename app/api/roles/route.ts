@@ -34,7 +34,7 @@ export const GET = withApiHandler(
 
     return successResponse(roles)
   },
-  { module: 'roles' }
+  { requireAuth: true, module: 'roles' }
 )
 
 // POST /api/roles - Create a new role
@@ -78,5 +78,5 @@ export const POST = withApiHandler(
 
     return successResponse(role, 201)
   },
-  { module: 'roles' }
+  { requireAuth: true, module: 'roles' }
 )

@@ -58,7 +58,7 @@ export const PUT = withApiHandler(
 
     return successResponse(updatedYear)
   },
-  { module: 'academic-years' }
+  { requireAuth: true, module: 'academic-years' }
 )
 
 export const DELETE = withApiHandler(
@@ -83,5 +83,5 @@ export const DELETE = withApiHandler(
 
     return successResponse({ message: 'Academic year deleted successfully' })
   },
-  { module: 'academic-years' }
+  { requireAuth: true, module: 'academic-years' }
 )
