@@ -65,9 +65,14 @@ export default function MenuPage() {
       if (res.ok) {
         fetchData()
         resetForm()
+        alert('Menu item saved successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to save menu item'}`)
       }
     } catch (error) {
       console.error('Error saving menu item:', error)
+      alert('Error saving menu item. Please try again.')
     }
   }
 
@@ -91,9 +96,14 @@ export default function MenuPage() {
       const res = await fetch(`/api/canteen/menu/${id}`, { method: 'DELETE' })
       if (res.ok) {
         fetchData()
+        alert('Menu item deleted successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to delete item'}`)
       }
     } catch (error) {
       console.error('Error deleting item:', error)
+      alert('Error deleting item. Please try again.')
     }
   }
 

@@ -71,9 +71,14 @@ export default function AssetsPage() {
       if (res.ok) {
         fetchData()
         resetForm()
+        alert('Asset saved successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to save asset'}`)
       }
     } catch (error) {
       console.error('Error saving asset:', error)
+      alert('Error saving asset. Please try again.')
     }
   }
 
@@ -101,9 +106,14 @@ export default function AssetsPage() {
       const res = await fetch(`/api/assets/${id}`, { method: 'DELETE' })
       if (res.ok) {
         fetchData()
+        alert('Asset deleted successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to delete asset'}`)
       }
     } catch (error) {
       console.error('Error deleting asset:', error)
+      alert('Error deleting asset. Please try again.')
     }
   }
 

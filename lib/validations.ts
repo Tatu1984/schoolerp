@@ -39,11 +39,16 @@ export const schoolSchema = z.object({
   name: requiredString.max(200),
   code: requiredString.max(50),
   address: optionalString,
+  city: optionalString, // FIXED: Added to match Prisma
+  state: optionalString, // FIXED: Added to match Prisma
+  country: optionalString, // FIXED: Added to match Prisma
+  pincode: optionalString, // FIXED: Added to match Prisma
   phone: phone,
   email: optionalEmail,
   website: optionalString,
   logo: optionalString,
-  principalName: optionalString, // FIXED: Added to match Prisma
+  principalName: optionalString,
+  established: dateString.optional(), // FIXED: Added to match Prisma
   isActive: z.boolean().default(true),
 })
 
@@ -52,6 +57,8 @@ export const branchSchema = z.object({
   code: requiredString.max(50),
   schoolId: requiredString,
   address: optionalString,
+  city: optionalString, // FIXED: Added to match Prisma
+  state: optionalString, // FIXED: Added to match Prisma
   phone: phone,
   email: optionalEmail,
   isActive: z.boolean().default(true),
@@ -209,12 +216,12 @@ export const payrollSchema = z.object({
 export const admissionSchema = z.object({
   inquiryNumber: requiredString.max(50),
   schoolId: requiredString,
-  academicYearId: requiredString, // FIXED: Added required field
+  academicYearId: requiredString,
   studentId: optionalString,
   firstName: requiredString.max(100),
   lastName: requiredString.max(100),
-  dateOfBirth: dateString.optional(),
-  gender: Gender.optional(),
+  dateOfBirth: dateString, // FIXED: Required in Prisma
+  gender: Gender, // FIXED: Required in Prisma
   appliedClass: requiredString,
   previousSchool: optionalString,
   parentName: requiredString.max(200),
@@ -226,6 +233,11 @@ export const admissionSchema = z.object({
   testScore: nonNegativeNumber.optional().nullable(),
   interviewDate: dateString.optional(),
   interviewNotes: optionalString,
+  approvedBy: optionalString, // FIXED: Added to match Prisma
+  approvalDate: dateString.optional(), // FIXED: Added to match Prisma
+  rejectionReason: optionalString, // FIXED: Added to match Prisma
+  notes: optionalString, // FIXED: Added to match Prisma
+  followUpDate: dateString.optional(), // FIXED: Added to match Prisma
   documents: z.record(z.unknown()).optional().nullable(),
 })
 

@@ -66,9 +66,14 @@ export default function ProductsPage() {
       if (res.ok) {
         fetchData()
         resetForm()
+        alert('Product saved successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to save product'}`)
       }
     } catch (error) {
       console.error('Error saving product:', error)
+      alert('Error saving product. Please try again.')
     }
   }
 
@@ -92,9 +97,14 @@ export default function ProductsPage() {
       const res = await fetch(`/api/marketplace/products/${id}`, { method: 'DELETE' })
       if (res.ok) {
         fetchData()
+        alert('Product deleted successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to delete product'}`)
       }
     } catch (error) {
       console.error('Error deleting product:', error)
+      alert('Error deleting product. Please try again.')
     }
   }
 

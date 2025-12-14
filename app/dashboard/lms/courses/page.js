@@ -72,9 +72,14 @@ export default function CoursesPage() {
       if (res.ok) {
         fetchData()
         resetForm()
+        alert('Course saved successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to save course'}`)
       }
     } catch (error) {
       console.error('Error saving course:', error)
+      alert('Error saving course. Please try again.')
     }
   }
 
@@ -100,9 +105,14 @@ export default function CoursesPage() {
       const res = await fetch(`/api/lms/courses/${id}`, { method: 'DELETE' })
       if (res.ok) {
         fetchData()
+        alert('Course deleted successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to delete course'}`)
       }
     } catch (error) {
       console.error('Error deleting course:', error)
+      alert('Error deleting course. Please try again.')
     }
   }
 

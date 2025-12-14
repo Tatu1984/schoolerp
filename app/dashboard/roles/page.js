@@ -74,9 +74,14 @@ export default function RolesPage() {
       if (res.ok) {
         fetchRoles()
         resetForm()
+        alert('Role saved successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to save role'}`)
       }
     } catch (error) {
       console.error('Error saving role:', error)
+      alert('Error saving role. Please try again.')
     }
   }
 
@@ -98,9 +103,14 @@ export default function RolesPage() {
       const res = await fetch(`/api/roles/${id}`, { method: 'DELETE' })
       if (res.ok) {
         fetchRoles()
+        alert('Role deleted successfully!')
+      } else {
+        const error = await res.json()
+        alert(`Error: ${error.message || 'Failed to delete role'}`)
       }
     } catch (error) {
       console.error('Error deleting role:', error)
+      alert('Error deleting role. Please try again.')
     }
   }
 
