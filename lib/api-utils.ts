@@ -114,8 +114,14 @@ const modulePermissions: Record<string, UserRole[]> = {
 
 export function hasModuleAccess(userRole: UserRole, module: string): boolean {
   const allowedRoles = modulePermissions[module]
-  if (!allowedRoles) return userRole === 'SUPER_ADMIN' // Default to admin only
-  return allowedRoles.includes(userRole)
+  console.log(`[hasModuleAccess] userRole: "${userRole}", module: "${module}", allowedRoles:`, allowedRoles)
+  if (!allowedRoles) {
+    console.log(`[hasModuleAccess] No allowedRoles for module, checking SUPER_ADMIN`)
+    return userRole === 'SUPER_ADMIN'
+  }
+  const hasAccess = allowedRoles.includes(userRole)
+  console.log(`[hasModuleAccess] Result: ${hasAccess}`)
+  return hasAccess
 }
 
 // Validation helper
