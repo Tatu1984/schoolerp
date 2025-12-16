@@ -46,8 +46,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl)
   }
 
-  // Check if user is active
-  if (!token.isActive) {
+  // Check if user is active (explicitly check for false, not just falsy)
+  if (token.isActive === false) {
     return NextResponse.redirect(new URL('/unauthorized', request.url))
   }
 
