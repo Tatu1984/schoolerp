@@ -11,44 +11,34 @@ const positiveNumber = z.number().positive('Must be a positive number')
 const nonNegativeNumber = z.number().min(0, 'Cannot be negative')
 const dateString = z.string().refine((val) => !val || !isNaN(Date.parse(val)), 'Invalid date')
 
-// Enums from Prisma - FIXED to match Prisma schema exactly
+// Enums from Prisma
 const Gender = z.enum(['MALE', 'FEMALE', 'OTHER'])
 const BloodGroup = z.enum(['A_POSITIVE', 'A_NEGATIVE', 'B_POSITIVE', 'B_NEGATIVE', 'AB_POSITIVE', 'AB_NEGATIVE', 'O_POSITIVE', 'O_NEGATIVE'])
 const StaffType = z.enum(['TEACHING', 'NON_TEACHING', 'ADMINISTRATIVE', 'SUPPORT'])
 const FeeType = z.enum(['TUITION', 'ADMISSION', 'EXAMINATION', 'TRANSPORT', 'HOSTEL', 'LIBRARY', 'SPORTS', 'LABORATORY', 'UNIFORM', 'BOOKS', 'OTHER'])
 const FeeFrequency = z.enum(['ONE_TIME', 'MONTHLY', 'QUARTERLY', 'HALF_YEARLY', 'YEARLY'])
 const PaymentStatus = z.enum(['PENDING', 'PARTIAL', 'PAID', 'OVERDUE', 'CANCELLED'])
-// FIXED: PaymentMode - changed BANK_TRANSFER to NET_BANKING, added OTHER
-const PaymentMode = z.enum(['CASH', 'CHEQUE', 'CARD', 'UPI', 'NET_BANKING', 'OTHER'])
+const PaymentMode = z.enum(['CASH', 'CARD', 'BANK_TRANSFER', 'UPI', 'CHEQUE'])
 const AdmissionStatus = z.enum(['INQUIRY', 'PROSPECT', 'TEST_SCHEDULED', 'TEST_COMPLETED', 'INTERVIEW_SCHEDULED', 'APPROVED', 'REJECTED', 'WAITLISTED', 'ADMITTED', 'CANCELLED'])
 const AssetType = z.enum(['FURNITURE', 'EQUIPMENT', 'ELECTRONICS', 'VEHICLES', 'BOOKS', 'SPORTS', 'OTHER'])
 const IssueStatus = z.enum(['ISSUED', 'RETURNED', 'OVERDUE', 'LOST', 'DAMAGED'])
-// FIXED: OrderStatus - added CONFIRMED
-const OrderStatus = z.enum(['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERED', 'CANCELLED'])
+const OrderStatus = z.enum(['PENDING', 'PREPARING', 'READY', 'DELIVERED', 'CANCELLED'])
 const MarketplaceOrderStatus = z.enum(['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'])
 const LeaveStatus = z.enum(['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'])
-// FIXED: TransactionType - added REFUND
-const TransactionType = z.enum(['CREDIT', 'DEBIT', 'REFUND'])
+const TransactionType = z.enum(['CREDIT', 'DEBIT'])
 const ProductCategory = z.enum(['UNIFORM', 'BOOKS', 'STATIONERY', 'SPORTS', 'OTHER'])
 const UserRole = z.enum(['SUPER_ADMIN', 'SCHOOL_ADMIN', 'PRINCIPAL', 'VICE_PRINCIPAL', 'HEAD_TEACHER', 'TEACHER', 'ACCOUNTANT', 'LIBRARIAN', 'TRANSPORT_MANAGER', 'HOSTEL_WARDEN', 'RECEPTIONIST', 'PARENT', 'STUDENT'])
-// FIXED: PurchaseOrderStatus - changed SUBMITTED to PENDING, DELIVERED to COMPLETED
-const PurchaseOrderStatus = z.enum(['DRAFT', 'PENDING', 'APPROVED', 'COMPLETED', 'CANCELLED'])
 
 // ============ SCHOOL & BRANCH ============
 export const schoolSchema = z.object({
   name: requiredString.max(200),
   code: requiredString.max(50),
   address: optionalString,
-  city: optionalString,
-  state: optionalString,
-  country: optionalString,
-  pincode: optionalString,
   phone: phone,
   email: optionalEmail,
   website: optionalString,
   logo: optionalString,
-  principalName: optionalString,
-  established: dateString.optional(),
+  description: optionalString,
   isActive: z.boolean().default(true),
 })
 
@@ -57,8 +47,6 @@ export const branchSchema = z.object({
   code: requiredString.max(50),
   schoolId: requiredString,
   address: optionalString,
-  city: optionalString, // FIXED: Added to match Prisma
-  state: optionalString, // FIXED: Added to match Prisma
   phone: phone,
   email: optionalEmail,
   isActive: z.boolean().default(true),
@@ -98,7 +86,6 @@ export const subjectSchema = z.object({
   schoolId: requiredString,
   classId: optionalString,
   description: optionalString,
-  isOptional: z.boolean().default(false), // FIXED: Added to match Prisma
   isActive: z.boolean().default(true),
 })
 
@@ -134,7 +121,7 @@ export const studentUpdateSchema = studentSchema.partial().omit({ schoolId: true
 export const guardianSchema = z.object({
   firstName: requiredString.max(100),
   lastName: requiredString.max(100),
-  relation: requiredString.max(50),
+  relationship: requiredString.max(50),
   phone: requiredString.regex(/^[\d\s\-+()]+$/, 'Invalid phone number'),
   email: optionalEmail,
   occupation: optionalString,
@@ -198,30 +185,27 @@ export const leaveRequestSchema = z.object({
   status: LeaveStatus.default('PENDING'),
 })
 
-// FIXED: payrollSchema - changed paidDate to paymentDate, month to string
 export const payrollSchema = z.object({
   staffId: requiredString,
-  month: requiredString.max(20), // FIXED: Changed from number to string to match Prisma
+  month: z.number().int().min(1).max(12),
   year: z.number().int().min(2000).max(2100),
   basicSalary: positiveNumber,
   allowances: z.record(z.number()).optional(),
   deductions: z.record(z.number()).optional(),
   netSalary: positiveNumber,
   isPaid: z.boolean().default(false),
-  paymentDate: dateString.optional(), // FIXED: Changed from paidDate to paymentDate
-  paymentMode: optionalString, // Added: Payment mode field
+  paidDate: dateString.optional(),
 })
 
 // ============ ADMISSIONS ============
 export const admissionSchema = z.object({
   inquiryNumber: requiredString.max(50),
   schoolId: requiredString,
-  academicYearId: requiredString,
   studentId: optionalString,
   firstName: requiredString.max(100),
   lastName: requiredString.max(100),
-  dateOfBirth: dateString, // FIXED: Required in Prisma
-  gender: Gender, // FIXED: Required in Prisma
+  dateOfBirth: dateString.optional(),
+  gender: Gender.optional(),
   appliedClass: requiredString,
   previousSchool: optionalString,
   parentName: requiredString.max(200),
@@ -233,11 +217,6 @@ export const admissionSchema = z.object({
   testScore: nonNegativeNumber.optional().nullable(),
   interviewDate: dateString.optional(),
   interviewNotes: optionalString,
-  approvedBy: optionalString, // FIXED: Added to match Prisma
-  approvalDate: dateString.optional(), // FIXED: Added to match Prisma
-  rejectionReason: optionalString, // FIXED: Added to match Prisma
-  notes: optionalString, // FIXED: Added to match Prisma
-  followUpDate: dateString.optional(), // FIXED: Added to match Prisma
   documents: z.record(z.unknown()).optional().nullable(),
 })
 
@@ -314,11 +293,10 @@ export const libraryIssueSchema = z.object({
 })
 
 // ============ TRANSPORT ============
-// FIXED: routeSchema - schoolId is required in Prisma
 export const routeSchema = z.object({
   name: requiredString.max(200),
   code: requiredString.max(50),
-  schoolId: requiredString, // FIXED: Changed from optional to required
+  schoolId: optionalString,
   description: optionalString,
   isActive: z.boolean().default(true),
 })
@@ -333,9 +311,8 @@ export const stopSchema = z.object({
   isActive: z.boolean().default(true),
 })
 
-// FIXED: vehicleSchema - schoolId is required in Prisma
 export const vehicleSchema = z.object({
-  schoolId: requiredString, // FIXED: Changed from optional to required
+  schoolId: optionalString,
   number: requiredString.max(50),
   registrationNo: optionalString,
   type: requiredString.max(50),
@@ -348,13 +325,10 @@ export const vehicleSchema = z.object({
   isActive: z.boolean().default(true),
 })
 
-// FIXED: studentTransportSchema - startDate is required in Prisma
 export const studentTransportSchema = z.object({
   studentId: requiredString,
   routeId: requiredString,
   stopId: requiredString,
-  startDate: dateString, // FIXED: Required in Prisma
-  endDate: dateString.optional(),
   isActive: z.boolean().default(true),
 })
 
@@ -372,8 +346,7 @@ export const driverSchema = z.object({
   isActive: z.boolean().default(true),
 })
 
-// FIXED: Renamed to gpsTrackingSchema to match Prisma model name
-export const gpsTrackingSchema = z.object({
+export const vehicleTrackingSchema = z.object({
   vehicleId: requiredString,
   latitude: z.number(),
   longitude: z.number(),
@@ -381,8 +354,6 @@ export const gpsTrackingSchema = z.object({
   timestamp: dateString.optional(),
   status: optionalString,
 })
-// Keep old name for backwards compatibility
-export const vehicleTrackingSchema = gpsTrackingSchema
 
 // ============ HOSTEL ============
 export const hostelSchema = z.object({
@@ -396,39 +367,25 @@ export const hostelSchema = z.object({
   isActive: z.boolean().default(true),
 })
 
-// FIXED: hostelFloorSchema - changed floorNumber to number
 export const hostelFloorSchema = z.object({
   name: requiredString.max(100),
   hostelId: requiredString,
-  number: z.number().int(), // FIXED: Changed from floorNumber to number
-  isActive: z.boolean().default(true),
+  floorNumber: z.number().int(),
 })
 
-// FIXED: hostelRoomSchema - changed roomNumber to number, removed rent
 export const hostelRoomSchema = z.object({
-  number: requiredString.max(50), // FIXED: Changed from roomNumber to number
+  roomNumber: requiredString.max(50),
   floorId: requiredString,
   capacity: positiveNumber.int(),
-  type: optionalString, // Optional in Prisma
+  type: requiredString.max(50),
+  rent: nonNegativeNumber.default(0),
   isActive: z.boolean().default(true),
 })
 
-// FIXED: hostelBedSchema - changed bedNumber to number
 export const hostelBedSchema = z.object({
-  number: requiredString.max(50), // FIXED: Changed from bedNumber to number
+  bedNumber: requiredString.max(50),
   roomId: requiredString,
   isOccupied: z.boolean().default(false),
-})
-
-// FIXED: Added studentHostelSchema for hostel assignments
-export const studentHostelSchema = z.object({
-  studentId: requiredString,
-  hostelId: requiredString,
-  bedId: requiredString,
-  startDate: dateString, // Required in Prisma
-  endDate: dateString.optional(),
-  messPlan: optionalString,
-  isActive: z.boolean().default(true),
 })
 
 export const messMenuSchema = z.object({
@@ -456,25 +413,15 @@ export const vendorSchema = z.object({
   isActive: z.boolean().default(true),
 })
 
-// FIXED: purchaseOrderSchema - status enum matches Prisma
 export const purchaseOrderSchema = z.object({
   orderNumber: requiredString.max(50),
   schoolId: requiredString,
   vendorId: requiredString,
   orderDate: dateString,
   expectedDelivery: dateString.optional(),
-  status: PurchaseOrderStatus.default('DRAFT'), // FIXED: Uses corrected enum
+  status: z.enum(['DRAFT', 'SUBMITTED', 'APPROVED', 'DELIVERED', 'CANCELLED']).default('DRAFT'),
   totalAmount: nonNegativeNumber.default(0),
   notes: optionalString,
-})
-
-// FIXED: Added purchaseOrderItemSchema
-export const purchaseOrderItemSchema = z.object({
-  purchaseOrderId: requiredString,
-  itemName: requiredString.max(200),
-  quantity: positiveNumber.int(),
-  unitPrice: positiveNumber,
-  totalPrice: positiveNumber,
 })
 
 export const assetSchema = z.object({
@@ -493,11 +440,10 @@ export const assetSchema = z.object({
 })
 
 // ============ LMS ============
-// FIXED: courseSchema - schoolId is required in Prisma
 export const courseSchema = z.object({
   name: requiredString.max(200),
   code: requiredString.max(50),
-  schoolId: requiredString, // FIXED: Changed from optional to required
+  schoolId: optionalString,
   subjectId: optionalString,
   classId: optionalString,
   teacherId: optionalString,
@@ -517,14 +463,13 @@ export const assignmentSchema = z.object({
   isActive: z.boolean().default(true),
 })
 
-// FIXED: assignmentSubmissionSchema - changed marks to score
 export const assignmentSubmissionSchema = z.object({
   assignmentId: requiredString,
   studentId: requiredString,
   content: optionalString,
   attachments: z.record(z.unknown()).optional().nullable(),
   submittedAt: dateString,
-  score: nonNegativeNumber.optional().nullable(), // FIXED: Changed from marks to score
+  marks: nonNegativeNumber.optional().nullable(),
   feedback: optionalString,
   isLate: z.boolean().default(false),
 })
@@ -563,17 +508,16 @@ export const announcementSchema = z.object({
   content: requiredString,
   targetRole: optionalString,
   targetClass: optionalString,
-  priority: optionalString.default('NORMAL'), // FIXED: Changed from enum to string to match Prisma
+  priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']).default('NORMAL'),
   attachments: z.record(z.unknown()).optional().nullable(),
   publishedAt: dateString.optional(),
   isActive: z.boolean().default(true),
 })
 
-// FIXED: messageSchema - subject is optional in Prisma
 export const messageSchema = z.object({
   senderId: requiredString,
   receiverId: requiredString,
-  subject: optionalString, // FIXED: Changed from required to optional
+  subject: requiredString.max(200),
   content: requiredString,
   isRead: z.boolean().default(false),
 })
@@ -599,17 +543,15 @@ export const eventSchema = z.object({
 })
 
 // ============ CANTEEN ============
-// FIXED: menuItemSchema - changed image to imageUrl, removed isVegetarian, added isActive
 export const menuItemSchema = z.object({
   name: requiredString.max(200),
   schoolId: requiredString,
   category: requiredString.max(100),
   price: positiveNumber,
   description: optionalString,
-  imageUrl: optionalString, // FIXED: Changed from image to imageUrl
-  // REMOVED: isVegetarian field doesn't exist in Prisma
+  image: optionalString,
+  isVegetarian: z.boolean().default(false),
   isAvailable: z.boolean().default(true),
-  isActive: z.boolean().default(true), // FIXED: Added to match Prisma
 })
 
 export const canteenOrderSchema = z.object({
@@ -632,28 +574,26 @@ export const smartWalletSchema = z.object({
   isActive: z.boolean().default(true),
 })
 
-// FIXED: walletTransactionSchema - changed referenceId to reference
 export const walletTransactionSchema = z.object({
   walletId: requiredString,
   type: TransactionType,
   amount: positiveNumber,
   description: optionalString,
-  reference: optionalString, // FIXED: Changed from referenceId to reference
+  referenceId: optionalString,
   balanceBefore: nonNegativeNumber,
   balanceAfter: nonNegativeNumber,
 })
 
 // ============ MARKETPLACE ============
-// FIXED: productSchema - changed image to imageUrl, removed sku
 export const productSchema = z.object({
   name: requiredString.max(200),
   schoolId: requiredString,
   category: ProductCategory,
   price: positiveNumber,
   description: optionalString,
-  imageUrl: optionalString, // FIXED: Changed from image to imageUrl
+  image: optionalString,
   stock: nonNegativeNumber.int().default(0),
-  // REMOVED: sku field doesn't exist in Prisma
+  sku: optionalString,
   isActive: z.boolean().default(true),
 })
 
@@ -673,51 +613,44 @@ export const marketplaceOrderSchema = z.object({
 })
 
 // ============ SECURITY ============
-// FIXED: auditLogSchema - changed oldValue/newValue to changes
 export const auditLogSchema = z.object({
   userId: optionalString,
   action: requiredString.max(100),
   entity: requiredString.max(100),
   entityId: optionalString,
-  changes: z.record(z.unknown()).optional().nullable(), // FIXED: Single field instead of oldValue/newValue
+  oldValue: z.record(z.unknown()).optional().nullable(),
+  newValue: z.record(z.unknown()).optional().nullable(),
   ipAddress: optionalString,
   userAgent: optionalString,
 })
 
-// FIXED: dataBackupSchema - aligned with Prisma model (no schoolId, added location, startedAt)
 export const dataBackupSchema = z.object({
-  fileName: requiredString.max(255),
-  fileSize: z.number().optional(), // Float in Prisma, optional
-  location: requiredString.max(500), // FIXED: Added required location field
-  status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED']).default('COMPLETED'),
-  backupType: requiredString.max(50), // FIXED: String in Prisma, not enum
-  startedAt: dateString, // FIXED: Added required startedAt field
-  completedAt: dateString.optional(), // FIXED: Added optional completedAt field
+  schoolId: requiredString,
+  filename: requiredString.max(255),
+  size: nonNegativeNumber.int(),
+  status: z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'FAILED']).default('PENDING'),
+  type: z.enum(['FULL', 'INCREMENTAL', 'DIFFERENTIAL']).default('FULL'),
+  notes: optionalString,
 })
 
-// FIXED: complianceRecordSchema - field names to match Prisma
 export const complianceRecordSchema = z.object({
   schoolId: requiredString,
-  complianceType: requiredString.max(100), // FIXED: Changed from type to complianceType
-  description: optionalString, // FIXED: Changed from required to optional
-  status: optionalString.default('ACTIVE'), // FIXED: Changed to string with default
-  validFrom: dateString.optional(), // FIXED: Changed from dueDate
-  validUntil: dateString.optional(), // FIXED: Changed from completedDate
-  documents: z.record(z.unknown()).optional().nullable(), // FIXED: Changed from evidence to documents
+  type: requiredString.max(100),
+  description: requiredString,
+  status: z.enum(['COMPLIANT', 'NON_COMPLIANT', 'PENDING_REVIEW', 'EXEMPTED']).default('PENDING_REVIEW'),
+  dueDate: dateString.optional(),
+  completedDate: dateString.optional(),
+  evidence: z.record(z.unknown()).optional().nullable(),
   notes: optionalString,
-  isActive: z.boolean().default(true), // FIXED: Added
 })
 
 // ============ USER & ROLE ============
-// FIXED: userSchema - changed name to firstName/lastName to match Prisma, schoolId is required
 export const userSchema = z.object({
   email: email.max(255),
   password: z.string().min(8, 'Password must be at least 8 characters').max(100),
-  firstName: requiredString.max(100), // FIXED: Changed from name to firstName
-  lastName: requiredString.max(100), // FIXED: Added lastName
-  phone: phone, // FIXED: Added phone field
+  name: requiredString.max(200),
   role: UserRole,
-  schoolId: requiredString, // FIXED: Changed from optional to required
+  schoolId: optionalString,
   isActive: z.boolean().default(true),
 })
 
@@ -734,48 +667,6 @@ export const roleSchema = z.object({
 export const loginSchema = z.object({
   email: email,
   password: z.string().min(1, 'Password is required'),
-})
-
-// ============ MISSING SCHEMAS ============
-// UserCustomRole schema
-export const userCustomRoleSchema = z.object({
-  userId: requiredString,
-  roleId: requiredString,
-})
-
-// StudentSibling schema
-export const studentSiblingSchema = z.object({
-  studentId: requiredString,
-  siblingId: requiredString,
-  relationship: optionalString,
-})
-
-// Library schema
-export const librarySchema = z.object({
-  name: requiredString.max(200),
-  schoolId: requiredString,
-  location: optionalString,
-  capacity: nonNegativeNumber.int().optional(),
-  isActive: z.boolean().default(true),
-})
-
-// TransportAlert schema
-export const transportAlertSchema = z.object({
-  vehicleId: requiredString,
-  alertType: requiredString.max(50),
-  message: requiredString.max(500),
-  severity: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).default('MEDIUM'),
-  isResolved: z.boolean().default(false),
-  resolvedAt: dateString.optional(),
-  resolvedBy: optionalString,
-})
-
-// StudentAttendance schema
-export const studentAttendanceSchema = z.object({
-  studentId: requiredString,
-  date: dateString,
-  status: z.enum(['PRESENT', 'ABSENT', 'LATE', 'HALF_DAY', 'EXCUSED']).default('PRESENT'),
-  remarks: optionalString,
 })
 
 // Type exports

@@ -124,6 +124,7 @@ export const POST = withApiHandler(
       data: {
         ...data,
         email: data.email?.toLowerCase(),
+        established: data.established ? new Date(data.established) : null,
       },
       include: {
         branches: true,

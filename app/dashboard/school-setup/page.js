@@ -81,8 +81,10 @@ export default function SchoolSetupPage() {
         alert('School settings saved successfully!')
         fetchSchool()
       } else {
-        const error = await res.json()
-        alert(`Error: ${error.message}`)
+        const errorData = await res.json()
+        const errorMessage = errorData.error || errorData.message || 'Unknown error'
+        const details = errorData.details ? '\n' + JSON.stringify(errorData.details, null, 2) : ''
+        alert(`Error: ${errorMessage}${details}`)
       }
     } catch (error) {
       alert('Error saving school settings')

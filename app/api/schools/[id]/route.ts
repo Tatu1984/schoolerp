@@ -107,6 +107,7 @@ export const PUT = withApiHandler(
       data: {
         ...data,
         email: data.email?.toLowerCase(),
+        established: data.established ? new Date(data.established) : null,
       },
     })
 
