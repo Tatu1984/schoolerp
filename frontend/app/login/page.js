@@ -28,7 +28,8 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError('Invalid email or password')
+        // Show the real reason (wrong password, deactivated account, server unreachable)
+        setError(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error)
       } else {
         // Get the user session to determine role-based redirect
         // Wait a bit for session to be populated
