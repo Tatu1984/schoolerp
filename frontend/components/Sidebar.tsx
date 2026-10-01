@@ -24,6 +24,7 @@ import {
   Utensils,
   Shield,
   ChevronDown,
+  Video,
   LucideIcon,
 } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
@@ -46,6 +47,11 @@ const menuItems: MenuItem[] = [
     title: 'Dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
+  },
+  {
+    title: 'Online Classes',
+    href: '/dashboard/lms/classes',
+    icon: Video,
   },
   {
     title: 'Core Administration',
