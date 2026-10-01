@@ -1,18 +1,18 @@
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.js
 .pnpm-store
 
 # testing
-/coverage
+coverage
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
-/build
+build
 
 # misc
 .DS_Store
@@ -33,3 +33,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local data backups written by /api/securitybackups/
+backups/
+
+# The API lives in its own repository (Tatu1984/schoolerpbackend), checked out here for local development
+/backend/
