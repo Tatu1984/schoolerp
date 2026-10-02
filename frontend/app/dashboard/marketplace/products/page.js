@@ -69,7 +69,7 @@ export default function ProductsPage() {
         alert('Product saved successfully!')
       } else {
         const error = await res.json()
-        alert(`Error: ${error.error || error.message || 'Failed to save product'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Failed to save product'}`)
       }
     } catch (error) {
       console.error('Error saving product:', error)
@@ -100,7 +100,7 @@ export default function ProductsPage() {
         alert('Product deleted successfully!')
       } else {
         const error = await res.json()
-        alert(`Error: ${error.error || error.message || 'Failed to delete product'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Failed to delete product'}`)
       }
     } catch (error) {
       console.error('Error deleting product:', error)

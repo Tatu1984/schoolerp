@@ -39,7 +39,7 @@ export default function DataBackupPage() {
       } else {
         const result = await res.json().catch(() => ({}))
         fetchBackups()
-        alert(result.error || 'Error creating backup')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error creating backup')
       }
     } catch (error) {
       console.error('Error creating backup:', error)
@@ -61,7 +61,7 @@ export default function DataBackupPage() {
       if (res.ok) {
         alert(result.data?.message || 'Backup restored successfully!')
       } else {
-        alert(result.error || 'Error restoring backup')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error restoring backup')
       }
     } catch (error) {
       console.error('Error restoring backup:', error)
@@ -84,7 +84,7 @@ export default function DataBackupPage() {
         window.URL.revokeObjectURL(url)
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Error downloading backup')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error downloading backup')
       }
     } catch (error) {
       console.error('Error downloading backup:', error)

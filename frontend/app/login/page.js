@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { getDefaultDashboard } from '@/lib/rolePermissions'
@@ -14,6 +14,11 @@ export default function LoginPage() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [changed, setChanged] = useState(false)
+
+  useEffect(() => {
+    setChanged(new URLSearchParams(window.location.search).get('changed') === '1')
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -61,6 +66,11 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {changed && !error && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+              Password changed. Please sign in with your new password.
+            </div>
+          )}
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
               {error}

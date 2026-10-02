@@ -81,7 +81,8 @@ export default function AssetsPage() {
           ...formData,
           purchasePrice: formData.purchasePrice ? parseFloat(formData.purchasePrice) : null,
           currentValue: formData.currentValue ? parseFloat(formData.currentValue) : null,
-          purchaseDate: new Date()
+          // Stamp the purchase date when the asset is first recorded; editing must not reset it
+          ...(editingAsset ? {} : { purchaseDate: new Date() })
         })
       })
 

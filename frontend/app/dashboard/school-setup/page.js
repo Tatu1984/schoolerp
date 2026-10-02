@@ -53,7 +53,7 @@ export default function SchoolSetupPage() {
         }
       } else {
         const errorData = await res.json()
-        alert(`Error loading school data: ${errorData.error || errorData.message || 'Unknown error'}`)
+        alert(`Error loading school data: ${((errorData.details && Object.values(errorData.details).flat().join(', ')) || errorData.error) || errorData.message || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Error fetching school:', error)

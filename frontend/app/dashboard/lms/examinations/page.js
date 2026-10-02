@@ -67,7 +67,7 @@ export default function ExaminationsPage() {
         alert(`Examination ${editingExam ? 'updated' : 'created'} successfully!`)
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(`Error: ${result.error || 'Failed to save examination'}`)
+        alert(`Error: ${((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to save examination'}`)
       }
     } catch (error) {
       alert('Error saving examination')
@@ -96,6 +96,9 @@ export default function ExaminationsPage() {
       if (res.ok) {
         fetchData()
         alert('Examination deleted successfully!')
+      } else {
+        const error = await res.json().catch(() => ({}))
+        alert(`Error: ${(error.details && Object.values(error.details).flat().join(', ')) || error.error || 'Request failed'}`)
       }
     } catch (error) {
       alert('Error deleting examination')

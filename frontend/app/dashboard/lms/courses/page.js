@@ -75,7 +75,7 @@ export default function CoursesPage() {
         alert('Course saved successfully!')
       } else {
         const error = await res.json()
-        alert(`Error: ${error.error || error.message || 'Failed to save course'}`)
+        alert(`Error: ${error.details ? Object.values(error.details).flat().join(', ') : (error.error || error.message || 'Failed to save course')}`)
       }
     } catch (error) {
       console.error('Error saving course:', error)
@@ -108,7 +108,7 @@ export default function CoursesPage() {
         alert('Course deleted successfully!')
       } else {
         const error = await res.json()
-        alert(`Error: ${error.error || error.message || 'Failed to delete course'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Failed to delete course'}`)
       }
     } catch (error) {
       console.error('Error deleting course:', error)

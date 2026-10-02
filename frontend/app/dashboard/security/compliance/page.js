@@ -43,6 +43,9 @@ export default function CompliancePage() {
 
       if (res.ok) {
         fetchCompliance()
+      } else {
+        const error = await res.json().catch(() => ({}))
+        alert(`Error: ${(error.details && Object.values(error.details).flat().join(', ')) || error.error || 'Request failed'}`)
       }
     } catch (error) {
       console.error('Error updating checklist:', error)

@@ -110,7 +110,7 @@ export default function AcademicYearsPage() {
         alert('Academic year deleted successfully!')
       } else {
         const error = await res.json().catch(() => ({}))
-        alert(`Error: ${error.error || error.message || 'Failed to delete'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Failed to delete'}`)
       }
     } catch (error) {
       alert('Error deleting academic year')
@@ -126,7 +126,7 @@ export default function AcademicYearsPage() {
         alert('Current academic year updated!')
       } else {
         const error = await res.json().catch(() => ({}))
-        alert(`Error: ${error.error || error.message || 'Failed to update current year'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Failed to update current year'}`)
       }
     } catch (error) {
       alert('Error updating current year')

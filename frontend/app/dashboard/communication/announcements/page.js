@@ -67,7 +67,7 @@ export default function AnnouncementsPage() {
         resetForm()
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(`Error: ${result.error || 'Failed to save announcement'}`)
+        alert(`Error: ${((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to save announcement'}`)
       }
     } catch (error) {
       console.error('Error saving announcement:', error)
@@ -93,6 +93,9 @@ export default function AnnouncementsPage() {
       const res = await fetch(`/api/communication/announcements/${id}`, { method: 'DELETE' })
       if (res.ok) {
         fetchData()
+      } else {
+        const error = await res.json().catch(() => ({}))
+        alert(`Error: ${(error.details && Object.values(error.details).flat().join(', ')) || error.error || 'Request failed'}`)
       }
     } catch (error) {
       console.error('Error deleting announcement:', error)

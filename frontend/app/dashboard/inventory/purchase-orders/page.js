@@ -68,7 +68,7 @@ export default function PurchaseOrdersPage() {
         alert(`Purchase order ${editingOrder ? 'updated' : 'created'} successfully!`)
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Error saving purchase order')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error saving purchase order')
       }
     } catch (error) {
       alert('Error saving purchase order')
@@ -99,7 +99,7 @@ export default function PurchaseOrdersPage() {
         alert('Purchase order deleted successfully!')
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Error deleting purchase order')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error deleting purchase order')
       }
     } catch (error) {
       alert('Error deleting purchase order')

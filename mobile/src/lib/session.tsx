@@ -1,11 +1,12 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { type AuthUser, clearTokens, restoreSession, setSessionExpiredHandler, signIn as apiSignIn } from './api';
+import { type AuthUser, clearTokens, restoreSession, setSessionExpiredHandler, signIn as apiSignIn, changePassword as apiChangePassword } from './api';
 
 interface SessionValue {
   user: AuthUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
 }
 
 const SessionContext = createContext<SessionValue | null>(null);
@@ -31,7 +32,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
-  return <SessionContext.Provider value={{ user, loading, signIn, signOut }}>{children}</SessionContext.Provider>;
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    setUser(await apiChangePassword(currentPassword, newPassword));
+  };
+
+  return <SessionContext.Provider value={{ user, loading, signIn, signOut, changePassword }}>{children}</SessionContext.Provider>;
 }
 
 export function useSession() {

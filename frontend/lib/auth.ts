@@ -46,6 +46,7 @@ export const authOptions: NextAuthOptions = {
           schoolId: user.schoolId,
           schoolName: user.schoolName,
           isActive: user.isActive,
+          mustChangePassword: !!user.mustChangePassword,
           accessToken,
         }
       },
@@ -70,6 +71,7 @@ export const authOptions: NextAuthOptions = {
         token.schoolName = user.schoolName
         token.isActive = user.isActive
         token.accessToken = user.accessToken
+        token.mustChangePassword = user.mustChangePassword
       }
       return token
     },
@@ -80,6 +82,7 @@ export const authOptions: NextAuthOptions = {
         session.user.schoolId = token.schoolId
         session.user.schoolName = token.schoolName
         session.user.isActive = token.isActive
+        session.user.mustChangePassword = token.mustChangePassword
       }
       return session
     },

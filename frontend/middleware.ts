@@ -53,10 +53,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/unauthorized', request.url))
   }
 
+  // A temporary password must be replaced before anything else can be used
+  if (token.mustChangePassword && !pathname.startsWith('/api/')) {
+    if (pathname !== '/change-password') {
+      return NextResponse.redirect(new URL('/change-password', request.url))
+    }
+    return NextResponse.next()
+  }
+  if (pathname === '/change-password') {
+    return NextResponse.next()
+  }
+
   // Keep students/parents inside the portal, and staff out of it
   const isPortalUser = portalRoles.includes(token.role as string)
   const isPortalPath = pathname.startsWith('/portal') || pathname.startsWith('/api/portal')
-  if (isPortalUser && !isPortalPath && pathname !== '/unauthorized') {
+  const isSharedPath = pathname.startsWith('/api/account')
+  if (isPortalUser && !isPortalPath && !isSharedPath && pathname !== '/unauthorized') {
     if (pathname.startsWith('/api/')) {
       return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
     }

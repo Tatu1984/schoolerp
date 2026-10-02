@@ -85,12 +85,12 @@ export default function Header({ setSidebarOpen }: HeaderProps) {
                     <p className="text-xs text-gray-500">{session?.user?.role?.replace(/_/g, ' ')}</p>
                   </div>
                   <Link
-                    href="/dashboard/profile"
+                    href="/change-password"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     role="menuitem"
                     onClick={() => setShowUserMenu(false)}
                   >
-                    Profile Settings
+                    Change Password
                   </Link>
                   <Link
                     href="/dashboard/settings"

@@ -49,7 +49,7 @@ export default function MessagesPage() {
         alert('Message sent successfully!')
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(`Error: ${result.error || 'Failed to send message'}`)
+        alert(`Error: ${((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to send message'}`)
       }
     } catch (error) {
       console.error('Error sending message:', error)
@@ -66,6 +66,9 @@ export default function MessagesPage() {
 
       if (res.ok) {
         fetchMessages()
+      } else {
+        const error = await res.json().catch(() => ({}))
+        alert(`Error: ${(error.details && Object.values(error.details).flat().join(', ')) || error.error || 'Request failed'}`)
       }
     } catch (error) {
       console.error('Error deleting message:', error)

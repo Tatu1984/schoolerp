@@ -63,7 +63,7 @@ export default function EntranceTestsPage() {
         resetForm()
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(`Error: ${result.error || 'Failed to save test'}`)
+        alert(`Error: ${((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to save test'}`)
       }
     } catch (error) {
       console.error('Error saving test:', error)
@@ -80,6 +80,9 @@ export default function EntranceTestsPage() {
 
       if (res.ok) {
         fetchTests()
+      } else {
+        const error = await res.json().catch(() => ({}))
+        alert(`Error: ${(error.details && Object.values(error.details).flat().join(', ')) || error.error || 'Request failed'}`)
       }
     } catch (error) {
       console.error('Error deleting test:', error)

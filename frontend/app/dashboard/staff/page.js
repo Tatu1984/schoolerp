@@ -37,7 +37,7 @@ export default function StaffPage() {
         alert('Staff member deactivated successfully!')
       } else {
         const error = await res.json().catch(() => ({}))
-        alert(`Error: ${error.error || 'Failed to delete staff member'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || 'Failed to delete staff member'}`)
       }
     } catch (error) {
       alert('Error deleting staff member')

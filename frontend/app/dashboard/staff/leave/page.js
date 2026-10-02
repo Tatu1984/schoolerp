@@ -65,7 +65,7 @@ export default function LeaveManagementPage() {
         resetForm()
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Failed to submit leave request')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to submit leave request')
       }
     } catch (error) {
       console.error('Error requesting leave:', error)
@@ -84,7 +84,7 @@ export default function LeaveManagementPage() {
         fetchLeaves()
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Failed to update leave status')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to update leave status')
       }
     } catch (error) {
       console.error('Error updating leave status:', error)

@@ -35,13 +35,14 @@ export default function BooksPage() {
     setLoading(true)
     try {
       const [booksRes, librariesRes] = await Promise.all([
-        fetch('/api/books'),
+        // Books with lending history are archived (isActive=false) on delete, so list active ones only
+        fetch('/api/books?isActive=true'),
         fetch('/api/libraries')
       ])
 
       if (!booksRes.ok) {
         const error = await booksRes.json()
-        alert(`Error loading books: ${error.error || error.message || 'Unknown error'}`)
+        alert(`Error loading books: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Unknown error'}`)
         return
       }
 
@@ -78,7 +79,8 @@ export default function BooksPage() {
           ...formData,
           pages: formData.pages ? parseInt(formData.pages) : null,
           quantity: parseInt(formData.quantity) || 1,
-          available: parseInt(formData.available) || parseInt(formData.quantity) || 1,
+          // 0 is a valid value (every copy issued); only fall back to the quantity when left blank
+          available: Number.isNaN(parseInt(formData.available)) ? (parseInt(formData.quantity) || 1) : parseInt(formData.available),
           price: formData.price ? parseFloat(formData.price) : null
         })
       })
@@ -89,7 +91,7 @@ export default function BooksPage() {
         alert('Book saved successfully!')
       } else {
         const error = await res.json()
-        alert(`Error: ${error.error || error.message || 'Failed to save book'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Failed to save book'}`)
       }
     } catch (error) {
       console.error('Error saving book:', error)
@@ -127,7 +129,7 @@ export default function BooksPage() {
         alert('Book deleted successfully!')
       } else {
         const error = await res.json()
-        alert(`Error: ${error.error || error.message || 'Failed to delete book'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Failed to delete book'}`)
       }
     } catch (error) {
       console.error('Error deleting book:', error)

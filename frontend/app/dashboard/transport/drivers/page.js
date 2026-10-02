@@ -58,7 +58,7 @@ export default function DriversPage() {
         alert(`Driver ${editingDriver ? 'updated' : 'added'} successfully!`)
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Error saving driver')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error saving driver')
       }
     } catch (error) {
       alert('Error saving driver')
@@ -89,7 +89,7 @@ export default function DriversPage() {
         alert('Driver deleted successfully!')
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Error deleting driver')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error deleting driver')
       }
     } catch (error) {
       alert('Error deleting driver')

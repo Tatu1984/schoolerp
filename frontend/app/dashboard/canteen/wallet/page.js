@@ -61,7 +61,7 @@ export default function SmartWalletPage() {
         alert('Wallet recharged successfully!')
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(`Error: ${result.error || 'Failed to recharge wallet'}`)
+        alert(`Error: ${((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to recharge wallet'}`)
       }
     } catch (error) {
       console.error('Error recharging wallet:', error)

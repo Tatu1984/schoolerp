@@ -68,7 +68,7 @@ export default function MenuPage() {
         alert('Menu item saved successfully!')
       } else {
         const error = await res.json()
-        alert(`Error: ${error.error || error.message || 'Failed to save menu item'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Failed to save menu item'}`)
       }
     } catch (error) {
       console.error('Error saving menu item:', error)
@@ -99,7 +99,7 @@ export default function MenuPage() {
         alert('Menu item deleted successfully!')
       } else {
         const error = await res.json()
-        alert(`Error: ${error.error || error.message || 'Failed to delete item'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Failed to delete item'}`)
       }
     } catch (error) {
       console.error('Error deleting item:', error)

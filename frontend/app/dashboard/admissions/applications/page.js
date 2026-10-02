@@ -21,7 +21,7 @@ export default function ApplicationsPage() {
         setApplications(result.data || [])
       } else {
         const error = await res.json()
-        alert(`Error loading applications: ${error.error || error.message || 'Unknown error'}`)
+        alert(`Error loading applications: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Error fetching applications:', error)
@@ -44,7 +44,7 @@ export default function ApplicationsPage() {
         alert(`Application ${newStatus.toLowerCase().replace('_', ' ')} successfully!`)
       } else {
         const error = await res.json()
-        alert(`Error: ${error.error || error.message || 'Failed to update status'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Failed to update status'}`)
       }
     } catch (error) {
       console.error('Error updating status:', error)

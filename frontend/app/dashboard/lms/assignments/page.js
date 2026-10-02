@@ -67,7 +67,7 @@ export default function AssignmentsPage() {
         alert(`Assignment ${editingAssignment ? 'updated' : 'created'} successfully!`)
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(`Error: ${result.error || 'Failed to save assignment'}`)
+        alert(`Error: ${((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to save assignment'}`)
       }
     } catch (error) {
       alert('Error saving assignment')
@@ -95,6 +95,9 @@ export default function AssignmentsPage() {
       if (res.ok) {
         fetchData()
         alert('Assignment deleted successfully!')
+      } else {
+        const error = await res.json().catch(() => ({}))
+        alert(`Error: ${(error.details && Object.values(error.details).flat().join(', ')) || error.error || 'Request failed'}`)
       }
     } catch (error) {
       alert('Error deleting assignment')

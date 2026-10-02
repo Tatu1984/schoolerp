@@ -10,24 +10,29 @@
   },
   "dependencies": {
     "date-fns": "3.0.6",
-    "lucide-react": "0.400.0",
-    "next": "14.1.0",
-    "next-auth": "4.24.10",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "lucide-react": "^1.49.0",
+    "next": "^15.5.27",
+    "next-auth": "^4.24.15",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "react-hook-form": "7.53.2",
     "react-hot-toast": "^2.6.0",
-    "recharts": "2.12.7",
+    "recharts": "^2.15.4",
     "zod": "3.23.8"
   },
   "devDependencies": {
     "@tailwindcss/forms": "0.5.9",
     "@types/node": "20.10.0",
-    "@types/react": "18.2.45",
-    "@types/react-dom": "18.2.18",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "autoprefixer": "10.4.20",
     "postcss": "8.4.49",
     "tailwindcss": "3.4.15",
     "typescript": "5.3.3"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "^8.5.23"
+    }
   }
 }

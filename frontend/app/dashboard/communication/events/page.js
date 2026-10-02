@@ -55,7 +55,7 @@ export default function EventsPage() {
         resetForm()
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(`Error: ${result.error || 'Failed to save event'}`)
+        alert(`Error: ${((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to save event'}`)
       }
     } catch (error) {
       console.error('Error saving event:', error)
@@ -72,6 +72,9 @@ export default function EventsPage() {
 
       if (res.ok) {
         fetchEvents()
+      } else {
+        const error = await res.json().catch(() => ({}))
+        alert(`Error: ${(error.details && Object.values(error.details).flat().join(', ')) || error.error || 'Request failed'}`)
       }
     } catch (error) {
       console.error('Error deleting event:', error)

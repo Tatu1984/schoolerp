@@ -15,6 +15,7 @@ export interface AuthUser {
   role: string;
   schoolId: string;
   schoolName: string;
+  mustChangePassword?: boolean;
 }
 
 export class ApiError extends Error {
@@ -112,4 +113,14 @@ export async function restoreSession() {
     return null;
   }
   return user;
+}
+
+// Replaces the password and swaps in the fresh tokens the server returns
+export async function changePassword(currentPassword: string, newPassword: string) {
+  const data = await api('/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+  await saveTokens(data.accessToken, data.refreshToken);
+  return data.user as AuthUser;
 }

@@ -26,8 +26,11 @@ function RootNavigator() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={!!user}>
+      <Stack.Protected guard={!!user && !user.mustChangePassword}>
         <Stack.Screen name="(app)" />
+      </Stack.Protected>
+      <Stack.Protected guard={!!user && !!user.mustChangePassword}>
+        <Stack.Screen name="change-password" />
       </Stack.Protected>
       <Stack.Protected guard={!user}>
         <Stack.Screen name="sign-in" />

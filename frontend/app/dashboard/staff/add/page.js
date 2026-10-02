@@ -49,7 +49,7 @@ export default function AddStaffPage() {
       const res = await fetch(`/api/staff/${id}`)
       const result = await res.json()
       if (!res.ok || !result.data) {
-        alert(result.error || 'Staff member not found')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Staff member not found')
         router.push('/dashboard/staff')
         return
       }

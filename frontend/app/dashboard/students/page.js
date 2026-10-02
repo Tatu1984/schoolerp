@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react'
 import { Plus, Search, Filter, Download, Upload, Eye, Edit, Trash2, Users } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 export default function StudentsPage() {
+  const router = useRouter()
   const [students, setStudents] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -188,14 +190,14 @@ export default function StudentsPage() {
                   </td>
                   <td className="px-6 py-4 text-right space-x-2">
                     <button
-                      onClick={() => window.location.href = `/dashboard/students/${student.id}`}
+                      onClick={() => router.push(`/dashboard/students/${student.id}`)}
                       className="text-blue-600 hover:text-blue-700"
                       title="View"
                     >
                       <Eye className="w-5 h-5 inline" />
                     </button>
                     <button
-                      onClick={() => window.location.href = `/dashboard/students/${student.id}/edit`}
+                      onClick={() => router.push(`/dashboard/students/${student.id}/edit`)}
                       className="text-green-600 hover:text-green-700"
                       title="Edit"
                     >

@@ -75,7 +75,7 @@ export default function IssueReturnPage() {
         resetSelection()
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Error issuing book')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error issuing book')
       }
     } catch (error) {
       alert('Error issuing book')
@@ -94,7 +94,7 @@ export default function IssueReturnPage() {
         fetchData()
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Error returning book')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error returning book')
       }
     } catch (error) {
       alert('Error returning book')

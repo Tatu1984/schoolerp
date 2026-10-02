@@ -104,7 +104,7 @@ export default function InquiriesPage() {
         alert('Inquiry added successfully!')
       } else {
         const error = await res.json()
-        alert(`Error: ${error.error || error.message || 'Failed to add inquiry'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || error.message || 'Failed to add inquiry'}`)
       }
     } catch (error) {
       alert('Error adding inquiry')
@@ -127,7 +127,7 @@ export default function InquiriesPage() {
         alert('Converted to prospect successfully!')
       } else {
         const error = await res.json().catch(() => ({}))
-        alert(`Error: ${error.error || 'Failed to convert inquiry'}`)
+        alert(`Error: ${((error.details && Object.values(error.details).flat().join(', ')) || error.error) || 'Failed to convert inquiry'}`)
       }
     } catch (error) {
       alert('Error converting to prospect')

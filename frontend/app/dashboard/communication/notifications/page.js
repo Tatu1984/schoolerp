@@ -49,7 +49,7 @@ export default function NotificationsPage() {
         alert('Notification sent successfully!')
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(`Error: ${result.error || 'Failed to send notification'}`)
+        alert(`Error: ${((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to send notification'}`)
       }
     } catch (error) {
       console.error('Error sending notification:', error)

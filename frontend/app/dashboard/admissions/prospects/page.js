@@ -63,7 +63,7 @@ export default function ProspectsPage() {
         resetForm()
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(`Error: ${result.error || 'Failed to save prospect'}`)
+        alert(`Error: ${((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to save prospect'}`)
       }
     } catch (error) {
       console.error('Error saving prospect:', error)
@@ -80,6 +80,9 @@ export default function ProspectsPage() {
 
       if (res.ok) {
         fetchProspects()
+      } else {
+        const error = await res.json().catch(() => ({}))
+        alert(`Error: ${(error.details && Object.values(error.details).flat().join(', ')) || error.error || 'Request failed'}`)
       }
     } catch (error) {
       console.error('Error deleting prospect:', error)

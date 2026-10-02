@@ -57,7 +57,7 @@ export default function MessPage() {
         alert(`Mess plan ${editingPlan ? 'updated' : 'added'} successfully!`)
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Error saving mess plan')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error saving mess plan')
       }
     } catch (error) {
       alert('Error saving mess plan')
@@ -87,7 +87,7 @@ export default function MessPage() {
         alert('Mess plan deleted successfully!')
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Error deleting mess plan')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error deleting mess plan')
       }
     } catch (error) {
       alert('Error deleting mess plan')

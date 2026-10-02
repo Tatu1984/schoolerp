@@ -40,7 +40,7 @@ export default function StudentPromotionsPage() {
 
   const fetchClasses = async () => {
     try {
-      const res = await fetch('/api/classes')
+      const res = await fetch('/api/classes?limit=100')
       const result = await res.json()
       setClasses(result.data || [])
     } catch (error) {
@@ -50,7 +50,7 @@ export default function StudentPromotionsPage() {
 
   const fetchSections = async () => {
     try {
-      const res = await fetch('/api/sections')
+      const res = await fetch('/api/sections?limit=100')
       const result = await res.json()
       setSections(result.data || [])
     } catch (error) {
@@ -66,7 +66,7 @@ export default function StudentPromotionsPage() {
 
     setLoading(true)
     try {
-      let url = `/api/students?classId=${filters.currentClassId}`
+      let url = `/api/students?limit=100&classId=${filters.currentClassId}`
       if (filters.currentSectionId) {
         url += `&sectionId=${filters.currentSectionId}`
       }
@@ -129,7 +129,8 @@ export default function StudentPromotionsPage() {
         loadStudents()
         setSelectedStudents(new Set())
       } else {
-        alert('Error promoting students')
+        const error = await res.json().catch(() => ({}))
+        alert(`Error: ${error.details ? Object.values(error.details).flat().join(', ') : (error.error || 'Error promoting students')}`)
       }
     } catch (error) {
       console.error('Error promoting students:', error)

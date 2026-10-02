@@ -10,6 +10,7 @@ declare module 'next-auth' {
     schoolId: string
     schoolName: string
     isActive: boolean
+    mustChangePassword: boolean
     accessToken: string
   }
 
@@ -22,6 +23,7 @@ declare module 'next-auth' {
       schoolId: string
       schoolName: string
       isActive: boolean
+    mustChangePassword: boolean
     }
   }
 }
@@ -33,6 +35,7 @@ declare module 'next-auth/jwt' {
     schoolId: string
     schoolName: string
     isActive: boolean
+    mustChangePassword: boolean
     accessToken: string
   }
 }

@@ -38,7 +38,7 @@ export default function MarketplaceOrdersPage() {
         fetchOrders()
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(`Error: ${result.error || 'Failed to update order'}`)
+        alert(`Error: ${((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to update order'}`)
       }
     } catch (error) {
       console.error('Error updating status:', error)

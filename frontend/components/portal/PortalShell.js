@@ -15,6 +15,7 @@ import {
   LogOut,
   Menu,
   GraduationCap,
+  KeyRound,
 } from 'lucide-react'
 import { usePortal } from './PortalContext'
 
@@ -83,6 +84,10 @@ export default function PortalShell({ children }) {
               <p className="text-xs text-indigo-300 truncate">{session.user.email}</p>
             </div>
           )}
+          <Link href="/change-password" className="flex items-center space-x-2 text-indigo-200 hover:text-white w-full px-3 py-2 rounded-lg hover:bg-indigo-800">
+            <KeyRound className="w-5 h-5" />
+            <span>Change password</span>
+          </Link>
           <button onClick={handleLogout} className="flex items-center space-x-2 text-indigo-200 hover:text-white w-full px-3 py-2 rounded-lg hover:bg-indigo-800">
             <LogOut className="w-5 h-5" />
             <span>Logout</span>

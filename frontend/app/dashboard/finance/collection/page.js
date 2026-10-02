@@ -55,7 +55,7 @@ export default function FeeCollectionPage() {
         setPaymentAmount('')
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(result.error || 'Error collecting payment')
+        alert(((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Error collecting payment')
       }
     } catch (error) {
       alert('Error collecting payment')

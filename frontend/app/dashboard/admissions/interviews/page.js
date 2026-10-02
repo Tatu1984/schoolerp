@@ -59,7 +59,7 @@ export default function InterviewsPage() {
         resetForm()
       } else {
         const result = await res.json().catch(() => ({}))
-        alert(`Error: ${result.error || 'Failed to save interview'}`)
+        alert(`Error: ${((result.details && Object.values(result.details).flat().join(', ')) || result.error) || 'Failed to save interview'}`)
       }
     } catch (error) {
       console.error('Error saving interview:', error)
@@ -76,6 +76,9 @@ export default function InterviewsPage() {
 
       if (res.ok) {
         fetchInterviews()
+      } else {
+        const error = await res.json().catch(() => ({}))
+        alert(`Error: ${(error.details && Object.values(error.details).flat().join(', ')) || error.error || 'Request failed'}`)
       }
     } catch (error) {
       console.error('Error deleting interview:', error)
@@ -92,6 +95,9 @@ export default function InterviewsPage() {
 
       if (res.ok) {
         fetchInterviews()
+      } else {
+        const error = await res.json().catch(() => ({}))
+        alert(`Error: ${(error.details && Object.values(error.details).flat().join(', ')) || error.error || 'Request failed'}`)
       }
     } catch (error) {
       console.error('Error updating status:', error)

@@ -47,7 +47,8 @@ export default function BulkUploadPage() {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0]
-    if (selectedFile && selectedFile.type === 'text/csv') {
+    // Windows reports .csv files as application/vnd.ms-excel (or no type at all), so check the name too
+    if (selectedFile && (selectedFile.type === 'text/csv' || /\.csv$/i.test(selectedFile.name))) {
       setFile(selectedFile)
       setResult(null)
     } else {
@@ -74,7 +75,8 @@ export default function BulkUploadPage() {
       })
 
       const result = await res.json()
-      setResult(result.data || result)
+      // Failed requests come back as { success: false, error }: show that as the message
+      setResult(result.data || { success: false, message: result.error || 'Upload failed', errors: [] })
 
       if (res.ok) {
         setFile(null)
